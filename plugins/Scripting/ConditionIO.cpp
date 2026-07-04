@@ -9,7 +9,7 @@ namespace
 {
 ConditionPtr makeCondition(ConditionType type)
 {
-    static_assert((int)ConditionType::Count == 57);
+    static_assert((int)ConditionType::Count == 58);
     switch (type) {
         case ConditionType::Not:
             return std::make_shared<NegatedCondition>();
@@ -100,6 +100,9 @@ ConditionPtr makeCondition(ConditionType type)
         case ConditionType::DoorStatus:
             return std::make_shared<DoorStatusCondition>();
 
+        case ConditionType::HasTerrainClearance:
+            return std::make_shared<HasTerrainClearanceCondition>();
+
         default:
             return nullptr;
     }
@@ -107,7 +110,7 @@ ConditionPtr makeCondition(ConditionType type)
 
 std::string_view toString(ConditionType type)
 {
-    static_assert((int)ConditionType::Count == 57);
+    static_assert((int)ConditionType::Count == 58);
     switch (type) {
         case ConditionType::Not:
             return "Not";
@@ -195,6 +198,9 @@ std::string_view toString(ConditionType type)
         case ConditionType::DoorStatus:
             return "Door status";
 
+        case ConditionType::HasTerrainClearance:
+            return "Terrain clearance";
+
         default:
             return "Unknown";
     }
@@ -203,7 +209,7 @@ std::string_view toString(ConditionType type)
 
 ConditionPtr readCondition(InputStream& stream)
 {
-static_assert((int)ConditionType::Count == 57);
+static_assert((int)ConditionType::Count == 58);
 int type;
 stream >> type;
 switch (static_cast<ConditionType>(type))
@@ -296,6 +302,9 @@ switch (static_cast<ConditionType>(type))
     case ConditionType::DoorStatus:
         return std::make_shared<DoorStatusCondition>(stream);
 
+    case ConditionType::HasTerrainClearance:
+        return std::make_shared<HasTerrainClearanceCondition>(stream);
+
     default:
         return nullptr;
 }
@@ -355,6 +364,7 @@ ConditionPtr drawConditionSelector(float width)
         drawSubMenu("Item", itemConditions);
         drawSubMenu("Party", partyConditions);
         drawSubMenu("Instance", instanceConditions);
+        drawConditionSelector(ConditionType::HasTerrainClearance);
         drawSubMenu("Logic", logicConditions);
         #ifndef LiveSplitMode
         drawSubMenu("Variable", variableConditions);

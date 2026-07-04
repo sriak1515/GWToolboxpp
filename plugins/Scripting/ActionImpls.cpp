@@ -29,6 +29,10 @@
 #include <GWCA/GameEntities/Party.h>
 #include <GWCA/GameEntities/Quest.h>
 #include <GWCA/GameEntities/Camera.h>
+#include <GWCA/GameEntities/Hero.h>
+
+#include <GWCA/Context/GameContext.h>
+#include <GWCA/Context/WorldContext.h>
 
 #include <GWCA/Utilities/Scanner.h>
 
@@ -2642,6 +2646,89 @@ void DestroyItemAction::drawSettings()
     ImGui::SameLine();
     ImGui::InputInt("model ID", &id, 0);
     ImGui::PopItemWidth();
+
+    ImGui::PopID();
+}
+
+/// ------------- FlagHeroAction -------------
+FlagHeroAction::FlagHeroAction(InputStream& stream)
+{
+    stream >> degree >> distance >> hero;
+}
+
+void FlagHeroAction::serialize(OutputStream& stream) const
+{
+    Action::serialize(stream);
+
+    stream << degree << distance << hero;
+}
+
+void FlagHeroAction::initialAction()
+{
+    Action::initialAction();
+
+    if (GW::Map::GetInstanceType() != GW::Constants::InstanceType::Explorable) return;
+    if (hero < 0 || hero > 7) return;
+
+    const GW::AgentLiving* player = GW::Agents::GetControlledCharacter();
+    if (!player) return;
+
+    const GW::AgentLiving* target = GW::Agents::GetTargetAsAgentLiving();
+
+    float reference_radiant = player->rotation_angle;
+
+    if (target && target != player) {
+        const float dx = target->x - player->x;
+        const float dy = target->y - player->y;
+
+        reference_radiant = std::atan(dx == 0 ? dy : dy / dx);
+        if (dx < 0) {
+            reference_radiant += std::numbers::pi;
+        }
+        else if (dx > 0 && dy < 0) {
+            reference_radiant += 2 * std::numbers::pi;
+        }
+    }
+
+    const float radiant = degree * std::numbers::pi / 180.f;
+    const float x = player->x + distance * std::cos(reference_radiant - radiant);
+    const float y = player->y + distance * std::sin(reference_radiant - radiant);
+
+    const auto pos = GW::GamePos(x, y, 0);
+
+    if (hero == 0) {
+        GW::PartyMgr::FlagAll(pos);
+    }
+    else {
+        GW::PartyMgr::FlagHero(hero, pos);
+    }
+}
+
+void FlagHeroAction::drawSettings()
+{
+    ImGui::PushID(drawId());
+
+    ImGui::Text("Flag hero");
+    ImGui::SameLine();
+    ImGui::PushItemWidth(90.f);
+    ImGui::InputInt("##hero", &hero, 1);
+    if (hero < 0) hero = 0;
+    if (hero > 7) hero = 7;
+    ImGui::SameLine();
+    ImGui::Text("at");
+    ImGui::SameLine();
+    ImGui::DragFloat("##degree", &degree, 0.1f, -360.f, 360.f);
+    ImGui::SameLine();
+    ImGui::Text("deg,");
+    ImGui::SameLine();
+    ImGui::DragFloat("##distance", &distance, 1.f, 0.f, 10000.f);
+    ImGui::SameLine();
+    ImGui::Text("dist");
+    ImGui::PopItemWidth();
+
+    ImGui::ShowHelp("Hero number: 0 = flag all, 1-7 = specific hero.\n"
+                     "Degree: angle offset from player facing (or target direction).\n"
+                     "Distance: distance from player in gwinch.");
 
     ImGui::PopID();
 }

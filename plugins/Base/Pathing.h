@@ -20,6 +20,7 @@ struct OutcomeChances {
 };
 
 const GW::PathingTrapezoid* findTrapezoid(const GW::GamePos& pos, const GW::PathingMapArray* path_map);
+bool hasTerrainClearance(float degree, float distance);
 OutcomeChances dcPrediction(const PathPoint& playerPathPoint, const GW::Agent* target, const GW::PathingMapArray* path_map);
 OutcomeChances sohPrediction(const PathPoint& playerPathPoint, const PathPoint& sohSpot);
 void InitializePathing();

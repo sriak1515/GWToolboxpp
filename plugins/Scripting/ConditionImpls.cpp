@@ -6,6 +6,7 @@
 #include <QuestInfo.h>
 #include <CharacteristicIO.h>
 #include <ScriptVariables.h>
+#include <Pathing.h>
 
 #include <GWCA/Constants/Constants.h>
 
@@ -2152,6 +2153,42 @@ bool ObjectiveHasStateCondition::drawSettings()
     drawEnumButton(status, {.last = QuestStatus::Completed, .id = 3});
 
     ImGui::PopItemWidth();
+    ImGui::PopID();
+
+    return false;
+}
+
+/// ------------- HasTerrainClearanceCondition -------------
+HasTerrainClearanceCondition::HasTerrainClearanceCondition(InputStream& stream)
+{
+    stream >> degree >> distance;
+}
+void HasTerrainClearanceCondition::serialize(OutputStream& stream) const
+{
+    Condition::serialize(stream);
+
+    stream << degree << distance;
+}
+bool HasTerrainClearanceCondition::check() const
+{
+    return hasTerrainClearance(degree, distance);
+}
+bool HasTerrainClearanceCondition::drawSettings()
+{
+    ImGui::PushID(drawId());
+
+    ImGui::Text("If terrain at");
+    ImGui::SameLine();
+    ImGui::PushItemWidth(80.f);
+    ImGui::DragFloat("##degree", &degree, 0.1f, -360.f, 360.f);
+    ImGui::SameLine();
+    ImGui::Text("deg,");
+    ImGui::SameLine();
+    ImGui::DragFloat("##distance", &distance, 1.f, 0.f, 10000.f);
+    ImGui::SameLine();
+    ImGui::Text("dist is walkable");
+    ImGui::PopItemWidth();
+
     ImGui::PopID();
 
     return false;

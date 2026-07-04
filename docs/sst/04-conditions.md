@@ -66,6 +66,12 @@ Conditions gate script execution. A script runs only when ALL its conditions are
 | `TargetHasCharacteristics` | `characteristic: CharacteristicPtr` | True if current target matches characteristic |
 | `AgentWithCharacteristicsCount` | `characteristics: vector<CharacteristicPtr>`, `count: int`, `comp: ComparisonOperator` | True if number of matching agents meets comparison |
 
+### Terrain
+
+| ConditionType | Parameters | Description |
+|--------------|-----------|-------------|
+| `HasTerrainClearance` | `degree: float`, `distance: float` | True if the point at degree (relative to player facing) and distance (gwinch) is on walkable terrain |
+
 ### Variables
 
 | ConditionType | Parameters | Description |

@@ -2,9 +2,12 @@
 
 #include <array>
 #include <cmath>
+#include <numbers>
 #include <Windows.h>
 
 #include <GWCA/GameEntities/Agent.h>
+#include <GWCA/Managers/AgentMgr.h>
+#include <GWCA/Managers/MapMgr.h>
 #include <GWCA/Utilities/Scanner.h>
 
 typedef void(__cdecl* FindPath_pt)(PathPoint* start, PathPoint* goal, float range, uint32_t maxCount, uint32_t* count, PathPoint* pathArray);
@@ -113,6 +116,22 @@ const GW::PathingTrapezoid* findTrapezoid(const GW::GamePos& pos, const GW::Path
         }
     }
     return nullptr;
+}
+
+bool hasTerrainClearance(float degree, float distance)
+{
+    const auto path_map = GW::Map::GetPathingMap();
+    if (!path_map) return false;
+
+    const auto player = GW::Agents::GetControlledCharacter();
+    if (!player) return false;
+
+    const float radiant = degree * std::numbers::pi / 180.f;
+    const float x = player->x + distance * std::cos(player->rotation_angle - radiant);
+    const float y = player->y + distance * std::sin(player->rotation_angle - radiant);
+
+    const auto target_pos = GW::GamePos(x, y, player->pos.zplane);
+    return findTrapezoid(target_pos, path_map) != nullptr;
 }
 
 /// @param direction: int 0..15, picks direction to offset to

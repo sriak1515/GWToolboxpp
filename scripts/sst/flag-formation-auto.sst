@@ -1,0 +1,66 @@
+// Auto Formation Detection
+// Probes terrain at wide formation positions and flags heroes accordingly.
+// Uses HasTerrainClearance to check if all wide formation points are walkable.
+// Falls back to narrow formation if any point is blocked.
+//
+// Team: Fully ranged
+// Area: Any (auto-detects)
+//
+// Clipboard import (paste into SST's Import field):
+//   11 6snttZJCZThmWnpiZS3_grrbbbbbd9KzEp2bxsrGAjg3rH1kqADyPsWwWsrT0FsKgNwkuSfSeKBDgesLgxhQrKSfSeKBDfBFP8zCEPgsWwWsWrwYbwXd8XCVaXJcY8ta0F4#yfAfrd9GACghuPbP1ILfp2bwHTd9GACggMAAzghMkECgd9GvOBq#ygNbxKPbwhkBgt9GvOBq#ygNbvCPT0yEyP5WAp2bwHTd9GACh0PbP1ILgZ9GvOBq#ygNbHePrLX6Kzhd9GvOBq#ygNbw36FgxhQrKDp1wYbwXd8XCVaXJcY8ta0F4#yfAfrd9GACghuPbHTMKfp2bwHTd9GACgggAECgghABBgd9GvOBq#ygNbxKPbHx6uzp2bwHTd9GACfzCPwHHH2M2XO#yfAg0p2bPWFsKgg2AqBp2bwHTd9GACgesNhXPPUNMrW#yfAg0p2bPWvT_MvgMM6Ezht9q#qa
+//
+// To regenerate: python3 tools/sst-import/sst_script_gen.py scripts/sst/flag-formation-auto.sst --dry-run
+
+script "Auto Formation" {
+    trigger: Hotkey
+    canLaunchInParallel: false
+
+    when {
+        True_
+    }
+
+    then {
+        Conditioned(
+            cond: And(
+                HasTerrainClearance(degree: 270, distance: 472.1),
+                HasTerrainClearance(degree: 90, distance: 472.1),
+                HasTerrainClearance(degree: 200.1, distance: 368.03),
+                HasTerrainClearance(degree: 159.9, distance: 368.03)
+            ),
+            then: {
+                SendChat(channel: All, message: /flag clear)
+                Wait(100ms)
+                FlagHero(degree: 270, distance: 472.1, hero: 1)
+                Wait(50ms)
+                FlagHero(degree: 243.43, distance: 282.86, hero: 2)
+                Wait(50ms)
+                FlagHero(degree: 180, distance: 126.5, hero: 3)
+                Wait(50ms)
+                FlagHero(degree: 116.57, distance: 282.86, hero: 4)
+                Wait(50ms)
+                FlagHero(degree: 90, distance: 472.1, hero: 5)
+                Wait(50ms)
+                FlagHero(degree: 200.1, distance: 368.03, hero: 6)
+                Wait(50ms)
+                FlagHero(degree: 159.9, distance: 368.03, hero: 7)
+            },
+            else: {
+                SendChat(channel: All, message: /flag clear)
+                Wait(100ms)
+                FlagHero(degree: 270, distance: 253, hero: 1)
+                Wait(50ms)
+                FlagHero(degree: 223.86, distance: 227.55, hero: 2)
+                Wait(50ms)
+                FlagHero(degree: 180, distance: 219.1, hero: 3)
+                Wait(50ms)
+                FlagHero(degree: 136.14, distance: 227.55, hero: 4)
+                Wait(50ms)
+                FlagHero(degree: 90, distance: 253, hero: 5)
+                Wait(50ms)
+                FlagHero(degree: 200.69, distance: 445.83, hero: 6)
+                Wait(50ms)
+                FlagHero(degree: 159.31, distance: 445.83, hero: 7)
+            }
+        )
+    }
+}

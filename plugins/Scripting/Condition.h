@@ -47,6 +47,7 @@ enum class ConditionType : int {
     QuestHasState,
     ObjectiveHasState,
     HeroHasSkill,
+    HasTerrainClearance,
 
     Count
 };

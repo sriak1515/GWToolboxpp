@@ -89,6 +89,12 @@ Actions are executed sequentially when a script runs. Each action has a lifecycl
 | `GWKey` | `GWKeyAction` | `action: ControlAction` | Press a GW UI key (interact, etc.) |
 | `AbandonQuest` | `AbandonQuestAction` | `name: string` | Abandon a quest by name |
 
+### Party
+
+| ActionType | Class | Parameters | Description |
+|-----------|-------|-----------|-------------|
+| `FlagHero` | `FlagHeroAction` | `hero: int` (0=all, 1-7), `degree: float`, `distance: float` | Flag a hero at a relative position from player facing (or target direction). Only works in explorable areas. |
+
 ### Variables
 
 | ActionType | Class | Parameters | Description |

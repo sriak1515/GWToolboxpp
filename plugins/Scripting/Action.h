@@ -51,6 +51,7 @@ enum class ActionType : int {
     LoadSkillbar,
     DestroyItem,
     DropItem,
+    FlagHero,
 
     Count
 };

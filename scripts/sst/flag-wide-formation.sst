@@ -1,0 +1,47 @@
+// Wide 0-5-2 Formation
+// Flags all 7 heroes in a wide formation for AoE-safe positioning.
+// Every hero is exactly out of nearby range from each other.
+//
+// Team: Fully ranged
+// Area: Wide open spaces
+//
+// Clipboard import (paste into SST's Import field):
+//   11 6tTYmpenZo0CZa08JoZF4zfeeeeeep2rL4#yfBepZfY8dgmllXmdr#J9GvOvep2bPWyDsKgNwkuu#yfAg0p2bPWyAzPPKyEyP5Wyp2bwHTd9GACfEsKfyCPSzp2bwHTd9GACfvYM3rH5INNbO#yfAg0p2bPWFsKgNwkuBp2bwHTd9GACgesLgxhQrKCp2bwHTd9GA...
+//
+// To regenerate: python3 tools/sst-import/sst_script_gen.py scripts/sst/flag-wide-formation.sst --dry-run
+
+script "Wide Formation" {
+    trigger: Hotkey
+    canLaunchInParallel: false
+
+    when {
+        True_
+    }
+
+    then {
+        // Clear any existing flags first
+        SendChat(channel: All, message: /flag clear)
+        Wait(100ms)
+
+        // Outer left midliner
+        FlagHero(degree: 270, distance: 472.1, hero: 1)
+        Wait(50ms)
+        // Inner left midliner
+        FlagHero(degree: 243.43, distance: 282.86, hero: 2)
+        Wait(50ms)
+        // Middle midliner
+        FlagHero(degree: 180, distance: 126.5, hero: 3)
+        Wait(50ms)
+        // Inner right midliner
+        FlagHero(degree: 116.57, distance: 282.86, hero: 4)
+        Wait(50ms)
+        // Outer right midliner
+        FlagHero(degree: 90, distance: 472.1, hero: 5)
+        Wait(50ms)
+        // Left backliner
+        FlagHero(degree: 200.1, distance: 368.03, hero: 6)
+        Wait(50ms)
+        // Right backliner
+        FlagHero(degree: 159.9, distance: 368.03, hero: 7)
+    }
+}

@@ -670,3 +670,19 @@ public:
 private:
     int id = 0;
 };
+
+class FlagHeroAction : public Action {
+public:
+    FlagHeroAction() = default;
+    FlagHeroAction(InputStream&);
+    ActionType type() const final { return ActionType::FlagHero; }
+    void initialAction() final;
+    void drawSettings() final;
+    void serialize(OutputStream&) const final;
+    ActionBehaviourFlags behaviour() const final { return ActionBehaviourFlag::ImmediateFinish; }
+
+private:
+    float degree = 0.f;
+    float distance = 0.f;
+    int hero = 0;
+};

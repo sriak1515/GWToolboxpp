@@ -586,3 +586,17 @@ private:
     QuestStatus status = QuestStatus::NotStarted;
     ObjectiveType objectiveType = ObjectiveType::Mission;
 };
+
+class HasTerrainClearanceCondition : public Condition {
+public:
+    HasTerrainClearanceCondition() = default;
+    HasTerrainClearanceCondition(InputStream&);
+    ConditionType type() const final { return ConditionType::HasTerrainClearance; }
+    bool check() const final;
+    bool drawSettings() final;
+    void serialize(OutputStream&) const final;
+
+private:
+    float degree = 0.f;
+    float distance = 0.f;
+};
