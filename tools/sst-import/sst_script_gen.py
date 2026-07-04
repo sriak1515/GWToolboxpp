@@ -88,7 +88,8 @@ class SkillID:
         "Armor_of_Unfeeling": 1050, "Soul_Twisting": 1058,
         "Displacement": 1067,
         "Summon_Spirits_luxon": 1838, "Summon_Spirits_kurzick": 1887,
-        "Drunken_Master": 2001,
+        "Drunken_Master": 2001, "Masochism": 2139,
+        "Soul_Taker": 3423,
     }
 
 class HeroID:
@@ -647,6 +648,39 @@ def parse_action(line):
                 s.write(item_id)
             s.write_separator()
         return serialize_use_item_list
+
+    # ChangeWeaponSet(id: N)
+    m = re.match(r'^ChangeWeaponSet\((.+)\)$', line)
+    if m:
+        kwargs = parse_kwargs(m.group(1))
+        set_id = int(kwargs.get("id", "1"))
+        return lambda s: (
+            s.write('A').write(ActionType.ChangeWeaponSet),
+            s.write(set_id),
+            s.write_separator()
+        )
+
+    # StoreTarget(id: N)
+    m = re.match(r'^StoreTarget\((.+)\)$', line)
+    if m:
+        kwargs = parse_kwargs(m.group(1))
+        slot_id = int(kwargs.get("id", "1"))
+        return lambda s: (
+            s.write('A').write(ActionType.StoreTarget),
+            s.write(slot_id),
+            s.write_separator()
+        )
+
+    # RestoreTarget(id: N)
+    m = re.match(r'^RestoreTarget\((.+)\)$', line)
+    if m:
+        kwargs = parse_kwargs(m.group(1))
+        slot_id = int(kwargs.get("id", "1"))
+        return lambda s: (
+            s.write('A').write(ActionType.RestoreTarget),
+            s.write(slot_id),
+            s.write_separator()
+        )
 
     raise ValueError(f"Unknown action: {line}")
 

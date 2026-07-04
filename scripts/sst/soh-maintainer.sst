@@ -1,0 +1,29 @@
+// Strength of Honor Maintainer
+// Maintains Strength of Honor enchantment on the player.
+// Recasts when the buff expires during combat.
+//
+// Clipboard import (paste into SST's Import field):
+//   11 6tPZT448diZDpaYm3e0F4quqqqqqu#zgwXrO#zejfzggMrbbbcWx9KBCeggMrG#zgMHLeq#ygvp2bSqqqq7HvfelbF2bHKqyAzp2bLG#qa
+//
+// To regenerate: python3 tools/sst-import/sst_script_gen.py scripts/sst/soh-maintainer.sst --dry-run
+
+script "SoH Maintainer" {
+    trigger: None
+    canLaunchInParallel: true
+
+    when {
+        FoeCount >= 1
+        not PlayerHasBuff(Strength_of_Honor)
+        HeroHasSkill(hero: NoHero, skill: Strength_of_Honor, requirement: ReadyToUse)
+        Throttle(3000ms)
+    }
+
+    then {
+        EnterCriticalSection
+        StoreTarget(id: 1)
+        ChangeTarget(sorting: AgentId, filter: Allegiance(Self))
+        UseHeroSkill(hero: NoHero, skill: Strength_of_Honor)
+        RestoreTarget(id: 1)
+        LeaveCriticalSection
+    }
+}

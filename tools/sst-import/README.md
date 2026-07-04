@@ -64,13 +64,21 @@ script "Script Name" {
 | `LeaveCriticalSection` | none |
 | `ChangeTarget` | `(sorting: Sorting, filter: Filter)` |
 | `UseHeroSkill` | `(hero: HeroID, skill: SkillName)` |
-| `Cast` | `(skill: SkillName)` |
+| `Cast` | `(skill: SkillName)` or `(id: SkillName)` |
 | `Wait` | `(Nms)` |
+| `ChangeWeaponSet` | `(id: N)` |
+| `StoreTarget` | `(id: N)` |
+| `RestoreTarget` | `(id: N)` |
+| `UseItem` | `(id: N)` |
+| `UseItemList` | `(ids: N, M, ...)` |
+| `SendChat` | `(channel: Channel, message: string)` |
+| `FlagHero` | `(degree: X, distance: Y, hero: Z)` |
+| `SetVariable` | `(name: X, value: Y, preserve: Z)` |
 
 ### Supported Values
 
-- **SkillName**: `Dark_Aura`, `No_Skill`, ...
+- **SkillName**: `No_Skill`, `Dark_Aura`, `Strength_of_Honor`, `Soul_Twisting`, `Shelter`, `Union`, `Armor_of_Unfeeling`, `Displacement`, `Drunken_Master`, `Masochism`, `Soul_Taker`, ...
 - **HeroID**: `NoHero`, `Norgu`, `Goren`, `Tahlkora`, `MasterOfWhispers`, ...
-- **Sorting**: `AgentId`, `ClosestToPlayer`, `FurthestFromPlayer`, `LowestHp`, `HighestHp`
+- **Sorting**: `AgentId`, `ClosestToPlayer`, `FurthestFromPlayer`, `ClosestToTarget`, `FurthestFromTarget`, `LowestHp`, `HighestHp`, `ModelID`
 - **Filter**: `Allegiance(Self)`, `Allegiance(PartyMember)`, `Allegiance(Hostile)`
-- **Trigger**: `None`
+- **Trigger**: `None`, `InstanceLoad`, `HardModePing`, `Hotkey`, `ChatMessage`

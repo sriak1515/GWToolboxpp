@@ -19,8 +19,10 @@ script "Dark Aura Maintainer" {
 
     then {
         EnterCriticalSection
+        StoreTarget(id: 1)
         ChangeTarget(sorting: AgentId, filter: Allegiance(Self))
         UseHeroSkill(hero: NoHero, skill: Dark_Aura)
+        RestoreTarget(id: 1)
         LeaveCriticalSection
     }
 }
