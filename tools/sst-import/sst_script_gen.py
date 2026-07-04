@@ -341,7 +341,7 @@ def parse_condition(line, sep_level=1):
             s.write_separator(sep_level)
         )
 
-    # PlayerHasBuff(SkillName)
+    # PlayerHasBuff(SkillName) - simple form
     m = re.match(r'^PlayerHasBuff\((\w+)\)$', line)
     if m:
         skill_id = SkillID.Skills.get(m.group(1), 0)
@@ -349,6 +349,22 @@ def parse_condition(line, sep_level=1):
             s.write('C').write(ConditionType.PlayerHasBuff),
             s.write(skill_id),
             s.write(0).write(0).write(0).write(0),  # dur params
+            s.write_separator(sep_level)
+        )
+
+    # PlayerHasBuff(id: SkillName, hasMax: true, maxDuration: N) - full form
+    m = re.match(r'^PlayerHasBuff\((.+)\)$', line)
+    if m:
+        kwargs = parse_kwargs(m.group(1))
+        skill_id = SkillID.Skills.get(kwargs.get("id", "No_Skill"), 0)
+        min_dur = int(kwargs.get("minDuration", "0"))
+        has_min = 1 if kwargs.get("hasMin", "false").lower() == "true" else 0
+        max_dur = int(kwargs.get("maxDuration", "0"))
+        has_max = 1 if kwargs.get("hasMax", "false").lower() == "true" else 0
+        return lambda s: (
+            s.write('C').write(ConditionType.PlayerHasBuff),
+            s.write(skill_id),
+            s.write(min_dur).write(has_min).write(max_dur).write(has_max),
             s.write_separator(sep_level)
         )
 
@@ -682,43 +698,96 @@ def parse_action(line):
             s.write_separator()
         )
 
+    # Conditioned(cond: ..., then: {...}, else: {...})
+    if line.startswith('Conditioned('):
+        # Find the matching closing paren
+        depth = 1
+        pos = len('Conditioned(')
+        while pos < len(line) and depth > 0:
+            if line[pos] == '(':
+                depth += 1
+            elif line[pos] == ')':
+                depth -= 1
+            pos += 1
+        inner = line[len('Conditioned('):pos-1]
+        return parse_conditioned_block(inner)
+
     raise ValueError(f"Unknown action: {line}")
 
 
 def parse_action_sequence(lines):
     """Parse a list of action lines and return a serializer function."""
-    actions = [parse_action(l) for l in lines]
+    # Join multi-line actions first (e.g., nested Conditioned blocks)
+    joined_lines = []
+    i = 0
+    while i < len(lines):
+        if lines[i].startswith('Conditioned('):
+            # Join until matching closing paren
+            joined = lines[i]
+            depth = joined.count('(') - joined.count(')')
+            i += 1
+            while i < len(lines) and depth > 0:
+                joined += ' ' + lines[i]
+                depth += lines[i].count('(') - lines[i].count(')')
+                i += 1
+            joined_lines.append(joined)
+        else:
+            joined_lines.append(lines[i])
+            i += 1
+
+    actions = [parse_action(l) for l in joined_lines]
     return lambda s: (
         s.write(len(actions)),
         *[a(s) for a in actions]
     )
 
 
+def extract_brace_content(text, start_pos):
+    """Extract content between matching braces starting at start_pos (after opening brace)."""
+    depth = 1
+    pos = start_pos
+    while pos < len(text) and depth > 0:
+        if text[pos] == '{':
+            depth += 1
+        elif text[pos] == '}':
+            depth -= 1
+        pos += 1
+    if depth != 0:
+        return None, pos
+    return text[start_pos:pos-1], pos
+
+
 def parse_conditioned_block(text):
-    """Parse the body of a Conditioned(...) block and return (cond_fn, then_fn, else_fn)."""
-    # Find cond: ..., then: {...}, else: {...}
-    # This is a simplified parser for the specific format used in flag-formation-auto.sst
+    """Parse the body of a Conditioned(...) block and return a serializer function."""
     cond_fn = None
     then_fn = None
     else_fn = None
 
-    # Extract cond
+    # Extract cond (everything before the first then:)
     m = re.search(r'cond:\s*(.+?)(?:,\s*then:)', text, re.DOTALL)
     if m:
         cond_text = m.group(1).strip()
         cond_fn = parse_condition(cond_text, sep_level=2)
+        search_start = m.end()
+    else:
+        search_start = 0
 
-    # Extract then block
-    m = re.search(r'then:\s*\{([^}]+)\}', text, re.DOTALL)
+    # Extract then block (handles nested braces) - search after cond
+    m = re.search(r'then:\s*\{', text[search_start:])
     if m:
-        then_lines = [l.strip() for l in m.group(1).strip().split('\n') if l.strip()]
-        then_fn = parse_action_sequence(then_lines)
+        then_content, _ = extract_brace_content(text[search_start:], m.end())
+        if then_content:
+            then_lines = [l.strip() for l in then_content.strip().split('\n') if l.strip()]
+            then_fn = parse_action_sequence(then_lines)
 
-    # Extract else block
-    m = re.search(r'else:\s*\{([^}]+)\}', text, re.DOTALL)
+    # Extract else block (handles nested braces) - search after then block
+    else_search_start = search_start + m.end() + (len(then_content) if m and then_content else 0) if m else search_start
+    m = re.search(r'else:\s*\{', text[else_search_start:])
     if m:
-        else_lines = [l.strip() for l in m.group(1).strip().split('\n') if l.strip()]
-        else_fn = parse_action_sequence(else_lines)
+        else_content, _ = extract_brace_content(text[else_search_start:], m.end())
+        if else_content:
+            else_lines = [l.strip() for l in else_content.strip().split('\n') if l.strip()]
+            else_fn = parse_action_sequence(else_lines)
 
     def serialize_conditioned(s):
         s.write('A').write(ActionType.Conditioned)
@@ -789,13 +858,24 @@ def parse_sst_file(filepath):
         pos += 1
     then_body = text[start:pos-1].strip()
 
-    # Check if the then block contains a Conditioned action
-    if then_body.lstrip().startswith('Conditioned('):
-        # Parse the Conditioned block
-        actions = [parse_conditioned_block(then_body.lstrip())]
-    else:
-        act_lines = [l.strip() for l in then_body.split('\n') if l.strip()]
-        actions = [parse_action(l) for l in act_lines]
+    # Parse then block as list of actions
+    raw_lines = [l.strip() for l in then_body.split('\n') if l.strip()]
+    act_lines = []
+    i = 0
+    while i < len(raw_lines):
+        if raw_lines[i].startswith('Conditioned('):
+            joined = raw_lines[i]
+            depth = joined.count('(') - joined.count(')')
+            i += 1
+            while i < len(raw_lines) and depth > 0:
+                joined += ' ' + raw_lines[i]
+                depth += raw_lines[i].count('(') - raw_lines[i].count(')')
+                i += 1
+            act_lines.append(joined)
+        else:
+            act_lines.append(raw_lines[i])
+            i += 1
+    actions = [parse_action(l) for l in act_lines]
 
     conditions = [parse_condition(l) for l in cond_lines]
 

@@ -1,0 +1,43 @@
+// Soul Taker Self-Buff Maintainer
+// Maintains Soul Taker and Masochism buffs on the player during combat.
+// Casts both in a single weapon switch cycle when either is low/expired.
+// Switches to weapon set 2 before casting, then back to set 1.
+//
+// Clipboard import (paste into SST's Import field):
+//   11 6tPZTtloRaYStroNeY8x38DtfXtJWmJn08diZCtr#Hbrbbbbbt9KzBfgJ9KAAgurd9KuAjejfzgwMgrbbbcWx9SeKvKzAyzeegXsWwWsrcrwrHwxXbbbcWx9SeKvKyvL8qqBflbBbp2rwHLPHKyp2bLt9Gv4yp2bwHTep2bxsrrGKqKvKzAyzeeeelbF2WsrwrLPHKqqBflbBblbeeep2bxsrrGKqKvKyvL8qqqqSf#BbjfzgfzFeegXsWwWsWrbbd9Gv4u#ygwd9a
+//
+// To regenerate: python3 tools/sst-import/sst_script_gen.py scripts/sst/soul-taker-self-buff-maintainer.sst --dry-run
+
+script "Soul Taker Self-Buff Maintainer" {
+    trigger: None
+    canLaunchInParallel: true
+
+    when {
+        FoeCount >= 1
+        Throttle(3000ms)
+        Or(not PlayerHasBuff(Soul_Taker), PlayerHasBuff(id: Soul_Taker, hasMax: true, maxDuration: 5), not PlayerHasBuff(Masochism), PlayerHasBuff(id: Masochism, hasMax: true, maxDuration: 5))
+        PlayerHasSkill(skill: Soul_Taker, requirement: ReadyToUse)
+    }
+
+    then {
+        EnterCriticalSection
+        ChangeWeaponSet(id: 2)
+        Wait(500ms)
+        Conditioned(
+            cond: Or(not PlayerHasBuff(Soul_Taker), PlayerHasBuff(id: Soul_Taker, hasMax: true, maxDuration: 5)),
+            then: {
+                Cast(id: Soul_Taker)
+                Wait(500ms)
+            }
+        )
+        Conditioned(
+            cond: Or(not PlayerHasBuff(Masochism), PlayerHasBuff(id: Masochism, hasMax: true, maxDuration: 5)),
+            then: {
+                Cast(id: Masochism)
+                Wait(500ms)
+            }
+        )
+        ChangeWeaponSet(id: 1)
+        LeaveCriticalSection
+    }
+}

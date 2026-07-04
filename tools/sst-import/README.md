@@ -44,7 +44,7 @@ script "Script Name" {
 | Condition | Parameters |
 |-----------|-----------|
 | `FoeCount` | `>= N`, `<= N`, `== N`, etc. |
-| `PlayerHasBuff` | `(SkillName)` |
+| `PlayerHasBuff` | `(SkillName)` or `(id: SkillName, hasMax: true, maxDuration: N)` |
 | `PlayerHasSkill` | `(skill: SkillName, requirement: OnBar\|OffCooldown\|ReadyToUse)` |
 | `PlayerHasSkillBySlot` | `(slot: N, requirement: OnBar\|OffCooldown\|ReadyToUse)` |
 | `HeroHasSkill` | `(hero: HeroID, skill: SkillName, requirement: OnBar\|OffCooldown\|ReadyToUse)` |
@@ -74,6 +74,7 @@ script "Script Name" {
 | `SendChat` | `(channel: Channel, message: string)` |
 | `FlagHero` | `(degree: X, distance: Y, hero: Z)` |
 | `SetVariable` | `(name: X, value: Y, preserve: Z)` |
+| `Conditioned` | `(cond: Condition, then: {...}, else: {...})` |
 
 ### Supported Values
 
