@@ -52,6 +52,7 @@ enum class ActionType : int {
     DestroyItem,
     DropItem,
     FlagHero,
+    UseItemList,
 
     Count
 };

@@ -1,0 +1,50 @@
+// Drunken Master Maintainer
+// Maintains Drunken Master enchantment on the player during combat.
+// First checks if the player is drunk; if not, drinks from inventory.
+// Then casts Drunken Master to maintain the buff.
+//
+// The alcohol item list is specified directly in the script conditions/actions.
+// Any drink item from Guild Wars will work (ales, wines, grog, brandy, etc.)
+//
+// Clipboard import (paste into SST's Import field):
+//   TODO: Generate after script is finalized
+//
+// To regenerate: python3 tools/sst-import/sst_script_gen.py scripts/sst/drunken-master-maintainer.sst --dry-run
+
+script "Drunken Master Maintainer" {
+    trigger: None
+    canLaunchInParallel: true
+
+    when {
+        FoeCount >= 1
+        not PlayerHasBuff(Drunken_Master)
+        PlayerHasSkill(skill: Drunken_Master, requirement: ReadyToUse)
+        Throttle(3000ms)
+    }
+
+    then {
+        Conditioned(
+            cond: not PlayerIsDrunk,
+            then: {
+                EnterCriticalSection
+                Conditioned(
+                    cond: ItemInInventoryList(ids: 6375, 5585, 910, 6367, 6049, 15477, 22190, 28435, 30855, 6366, 24593, 31145, 31146, 2513, 35124, 36682, 19172, 19173, 19171),
+                    then: {
+                        UseItemList(ids: 6375, 5585, 910, 6367, 6049, 15477, 22190, 28435, 30855, 6366, 24593, 31145, 31146, 2513, 35124, 36682, 19172, 19173, 19171)
+                        Wait(1000ms)
+                    },
+                    else: {
+                        SendChat(channel: Log, message: [DM Maintainer] Warning: No alcohol in inventory!)
+                    }
+                )
+                Cast(id: Drunken_Master)
+                LeaveCriticalSection
+            },
+            else: {
+                EnterCriticalSection
+                Cast(id: Drunken_Master)
+                LeaveCriticalSection
+            }
+        )
+    }
+}

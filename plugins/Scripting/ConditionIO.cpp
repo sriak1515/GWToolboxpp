@@ -9,7 +9,7 @@ namespace
 {
 ConditionPtr makeCondition(ConditionType type)
 {
-    static_assert((int)ConditionType::Count == 58);
+    static_assert((int)ConditionType::Count == 60);
     switch (type) {
         case ConditionType::Not:
             return std::make_shared<NegatedCondition>();
@@ -103,6 +103,12 @@ ConditionPtr makeCondition(ConditionType type)
         case ConditionType::HasTerrainClearance:
             return std::make_shared<HasTerrainClearanceCondition>();
 
+        case ConditionType::PlayerIsDrunk:
+            return std::make_shared<PlayerIsDrunkCondition>();
+
+        case ConditionType::ItemInInventoryList:
+            return std::make_shared<ItemInInventoryListCondition>();
+
         default:
             return nullptr;
     }
@@ -110,7 +116,7 @@ ConditionPtr makeCondition(ConditionType type)
 
 std::string_view toString(ConditionType type)
 {
-    static_assert((int)ConditionType::Count == 58);
+    static_assert((int)ConditionType::Count == 60);
     switch (type) {
         case ConditionType::Not:
             return "Not";
@@ -201,6 +207,12 @@ std::string_view toString(ConditionType type)
         case ConditionType::HasTerrainClearance:
             return "Terrain clearance";
 
+        case ConditionType::PlayerIsDrunk:
+            return "Player is drunk";
+
+        case ConditionType::ItemInInventoryList:
+            return "Item in inventory (list)";
+
         default:
             return "Unknown";
     }
@@ -209,7 +221,7 @@ std::string_view toString(ConditionType type)
 
 ConditionPtr readCondition(InputStream& stream)
 {
-static_assert((int)ConditionType::Count == 58);
+static_assert((int)ConditionType::Count == 60);
 int type;
 stream >> type;
 switch (static_cast<ConditionType>(type))
@@ -305,6 +317,12 @@ switch (static_cast<ConditionType>(type))
     case ConditionType::HasTerrainClearance:
         return std::make_shared<HasTerrainClearanceCondition>(stream);
 
+    case ConditionType::PlayerIsDrunk:
+        return std::make_shared<PlayerIsDrunkCondition>(stream);
+
+    case ConditionType::ItemInInventoryList:
+        return std::make_shared<ItemInInventoryListCondition>(stream);
+
     default:
         return nullptr;
 }
@@ -352,6 +370,8 @@ ConditionPtr drawConditionSelector(float width)
         {
             drawSubMenu("Skillbar info", skillConditions);
         if (const auto type = drawCharacteristicSubMenu({CharacteristicType::DistanceToPlayer, CharacteristicType::AngleToCameraForward, CharacteristicType::AngleToPlayerForward})) result = std::make_shared<PlayerHasCharacteristicsCondition>(*type);
+            drawConditionSelector(ConditionType::PlayerIsDrunk);
+            drawConditionSelector(ConditionType::ItemInInventoryList);
 
             ImGui::EndMenu();
         }

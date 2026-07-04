@@ -38,6 +38,9 @@
 #include <algorithm>
 #include <ranges>
 
+#include <IconsFontAwesome5.h>
+#include <Widgets/AlcoholWidget.h>
+
 namespace {
     constexpr double eps = 1e-3;
     constexpr float indent = 30.f;
@@ -2191,5 +2194,102 @@ bool HasTerrainClearanceCondition::drawSettings()
 
     ImGui::PopID();
 
+    return false;
+}
+
+/// ------------- PlayerIsDrunkCondition -------------
+PlayerIsDrunkCondition::PlayerIsDrunkCondition(InputStream& stream)
+{
+    stream >> minLevel >> hasMinLevel;
+}
+void PlayerIsDrunkCondition::serialize(OutputStream& stream) const
+{
+    Condition::serialize(stream);
+
+    stream << minLevel << hasMinLevel;
+}
+bool PlayerIsDrunkCondition::check() const
+{
+    const auto alcoholLevel = AlcoholWidget::Instance().GetAlcoholLevel();
+    if (hasMinLevel && alcoholLevel < DWORD(minLevel)) return false;
+    return alcoholLevel > 0;
+}
+bool PlayerIsDrunkCondition::drawSettings()
+{
+    ImGui::PushID(drawId());
+
+    ImGui::Text("If the player is drunk");
+    ImGui::SameLine();
+
+    if (hasMinLevel)
+    {
+        ImGui::Text("with alcohol level >= ");
+        ImGui::SameLine();
+        ImGui::PushItemWidth(50.f);
+        ImGui::InputInt("##minLevel", &minLevel, 0);
+        ImGui::PopItemWidth();
+        ImGui::SameLine();
+        if (ImGui::Button("X###0"))
+        {
+            hasMinLevel = false;
+            minLevel = 1;
+        }
+    }
+    else
+    {
+        if (ImGui::Button("Add min level")) hasMinLevel = true;
+    }
+
+    ImGui::PopID();
+
+    return false;
+}
+
+/// ------------- ItemInInventoryListCondition -------------
+ItemInInventoryListCondition::ItemInInventoryListCondition(InputStream& stream)
+{
+    int count;
+    stream >> count;
+    modelIds.resize(count);
+    for (auto& id : modelIds) {
+        stream >> id;
+    }
+}
+void ItemInInventoryListCondition::serialize(OutputStream& stream) const
+{
+    Condition::serialize(stream);
+    stream << static_cast<int>(modelIds.size());
+    for (const auto id : modelIds) {
+        stream << id;
+    }
+}
+bool ItemInInventoryListCondition::check() const
+{
+    for (const auto id : modelIds) {
+        if (FindMatchingItem(id)) return true;
+    }
+    return false;
+}
+bool ItemInInventoryListCondition::drawSettings()
+{
+    ImGui::PushID(drawId());
+    ImGui::Text("If the player has any of these items in inventory:");
+    for (size_t i = 0; i < modelIds.size(); ++i) {
+        ImGui::PushID(static_cast<int>(i));
+        ImGui::SameLine();
+        ImGui::PushItemWidth(90.f);
+        ImGui::InputInt("##id", &modelIds[i], 0);
+        ImGui::PopItemWidth();
+        ImGui::SameLine();
+        if (ImGui::Button("X")) {
+            modelIds.erase(modelIds.begin() + i);
+            --i;
+        }
+        ImGui::PopID();
+    }
+    if (ImGui::Button("+")) {
+        modelIds.push_back(0);
+    }
+    ImGui::PopID();
     return false;
 }

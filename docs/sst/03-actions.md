@@ -50,6 +50,7 @@ Actions are executed sequentially when a script runs. Each action has a lifecycl
 | ActionType | Class | Parameters | Description |
 |-----------|-------|-----------|-------------|
 | `UseItem` | `UseItemAction` | `id: int` (model ID) | Use/consume an item by model ID |
+| `UseItemList` | `UseItemListAction` | `ids: vector<int>` (model IDs) | Use first matching item from a list of model IDs |
 | `EquipItem` | `EquipItemAction` | `id: int`, `modstruct: int`, `hasModstruct: bool` | Equip an item by model ID |
 | `EquipItemBySlot` | `EquipItemBySlotAction` | `bag: Bag`, `slot: int` | Equip item from bag/slot |
 | `UnequipItem` | `UnequipItemAction` | `slot: EquippedItemSlot` | Unequip from equipment slot |

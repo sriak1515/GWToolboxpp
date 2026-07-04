@@ -38,6 +38,7 @@ class ConditionType:
     ObjectiveHasState = 55; HeroHasSkill = 56
     HasTerrainClearance = 57; HeroHasEnergy = 58
     HeroHasBuff = 59; PlayerIsDead = 60
+    PlayerIsDrunk = 61; ItemInInventoryList = 62
 
 class ActionType:
     MoveTo = 0; Cast = 2; CastBySlot = 3; DropBuff = 4
@@ -55,7 +56,7 @@ class ActionType:
     DecrementVariable = 36; MoveItemToSlot = 37
     KeyboardMove = 39; Random = 40; AddHero = 41
     KickHero = 42; LoadSkillbar = 43; DestroyItem = 44
-    DropItem = 45; FlagHero = 46
+    DropItem = 45; FlagHero = 46; UseItemList = 47
 
 class Sorting:
     AgentId = 0; ClosestToPlayer = 1; FurthestFromPlayer = 2
@@ -82,10 +83,12 @@ class HasSkillRequirement:
 class SkillID:
     Skills = {
         "No_Skill": 0, "Dark_Aura": 116,
+        "Strength_of_Honor": 243,
         "Union": 745, "Shelter": 816,
         "Armor_of_Unfeeling": 1050, "Soul_Twisting": 1058,
         "Displacement": 1067,
         "Summon_Spirits_luxon": 1838, "Summon_Spirits_kurzick": 1887,
+        "Drunken_Master": 2001,
     }
 
 class HeroID:
@@ -348,6 +351,19 @@ def parse_condition(line, sep_level=1):
             s.write_separator(sep_level)
         )
 
+    # PlayerHasSkill(skill: X, requirement: Y)
+    m = re.match(r'^PlayerHasSkill\((.+)\)$', line)
+    if m:
+        kwargs = parse_kwargs(m.group(1))
+        skill_id = SkillID.Skills.get(kwargs.get("skill", "No_Skill"), 0)
+        req_map = {"OnBar": 0, "OffCooldown": 1, "ReadyToUse": 2}
+        req = req_map.get(kwargs.get("requirement", "ReadyToUse"), 2)
+        return lambda s: (
+            s.write('C').write(ConditionType.PlayerHasSkill),
+            s.write(skill_id).write(req),
+            s.write_separator(sep_level)
+        )
+
     # HeroHasSkill(hero: X, skill: Y, requirement: Z)
     m = re.match(r'^HeroHasSkill\((.+)\)$', line)
     if m:
@@ -436,6 +452,39 @@ def parse_condition(line, sep_level=1):
             s.write_separator(sep_level)
         )
 
+    # PlayerIsDrunk
+    if line == "PlayerIsDrunk":
+        return lambda s: (
+            s.write('C').write(ConditionType.PlayerIsDrunk),
+            s.write(0).write(0),  # minLevel=0, hasMinLevel=false
+            s.write_separator(sep_level)
+        )
+
+    # PlayerIsDrunk(minLevel: N)
+    m = re.match(r'^PlayerIsDrunk\((.+)\)$', line)
+    if m:
+        kwargs = parse_kwargs(m.group(1))
+        min_level = int(kwargs.get("minLevel", "1"))
+        return lambda s: (
+            s.write('C').write(ConditionType.PlayerIsDrunk),
+            s.write(min_level).write(1),  # hasMinLevel=true
+            s.write_separator(sep_level)
+        )
+
+    # ItemInInventoryList(ids: N, M, ...)
+    m = re.match(r'^ItemInInventoryList\((.+)\)$', line)
+    if m:
+        kwargs = parse_kwargs(m.group(1))
+        ids_str = kwargs.get("ids", "")
+        ids = [int(x.strip()) for x in ids_str.split(',') if x.strip()]
+        def serialize_item_list(s):
+            s.write('C').write(ConditionType.ItemInInventoryList)
+            s.write(len(ids))
+            for item_id in ids:
+                s.write(item_id)
+            s.write_separator(sep_level)
+        return serialize_item_list
+
     # HasTerrainClearance(degree: X, distance: Y)
     m = re.match(r'^HasTerrainClearance\((.+)\)$', line)
     if m:
@@ -523,11 +572,14 @@ def parse_action(line):
             s.write_separator()
         )
 
-    # Cast(skill: X)
+    # Cast(skill: X) or Cast(id: X)
     m = re.match(r'^Cast\((.+)\)$', line)
     if m:
         kwargs = parse_kwargs(m.group(1))
-        skill_id = SkillID.Skills.get(kwargs.get("skill", "No_Skill"), 0)
+        if "skill" in kwargs:
+            skill_id = SkillID.Skills.get(kwargs.get("skill", "No_Skill"), 0)
+        else:
+            skill_id = SkillID.Skills.get(kwargs.get("id", "No_Skill"), 0)
         return lambda s: (
             s.write('A').write(ActionType.Cast),
             s.write(skill_id),
@@ -570,6 +622,31 @@ def parse_action(line):
             s.write(value).write(preserve),
             s.write_separator()
         )
+
+    # UseItem(id: X)
+    m = re.match(r'^UseItem\((.+)\)$', line)
+    if m:
+        kwargs = parse_kwargs(m.group(1))
+        item_id = int(kwargs.get("id", "0"))
+        return lambda s: (
+            s.write('A').write(ActionType.UseItem),
+            s.write(item_id),
+            s.write_separator()
+        )
+
+    # UseItemList(ids: N, M, ...)
+    m = re.match(r'^UseItemList\((.+)\)$', line)
+    if m:
+        kwargs = parse_kwargs(m.group(1))
+        ids_str = kwargs.get("ids", "")
+        ids = [int(x.strip()) for x in ids_str.split(',') if x.strip()]
+        def serialize_use_item_list(s):
+            s.write('A').write(ActionType.UseItemList)
+            s.write(len(ids))
+            for item_id in ids:
+                s.write(item_id)
+            s.write_separator()
+        return serialize_use_item_list
 
     raise ValueError(f"Unknown action: {line}")
 

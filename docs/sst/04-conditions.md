@@ -45,6 +45,7 @@ Conditions gate script execution. A script runs only when ALL its conditions are
 | `PlayerHasItemEquipped` | `modelId: int` | True if player has item equipped |
 | `PlayerHasCharacteristics` | `characteristic: CharacteristicPtr` | True if player matches characteristic |
 | `RemainingCooldown` | `id: SkillID`, `hasMin/hasMax: bool`, `minCooldown/maxCooldown: int` | True if skill cooldown is in range |
+| `PlayerIsDrunk` | `minLevel: int` (optional), `hasMinLevel: bool` (optional) | True if player's alcohol level > 0 (or >= minLevel if specified) |
 
 ### Hero
 
@@ -57,6 +58,7 @@ Conditions gate script execution. A script runs only when ALL its conditions are
 | ConditionType | Parameters | Description |
 |--------------|-----------|-------------|
 | `ItemInInventory` | `modelId: int` | True if item with model ID is in inventory |
+| `ItemInInventoryList` | `ids: vector<int>` (model IDs) | True if any item from the list is in inventory |
 
 ### Agent
 

@@ -48,6 +48,8 @@ enum class ConditionType : int {
     ObjectiveHasState,
     HeroHasSkill,
     HasTerrainClearance,
+    PlayerIsDrunk,
+    ItemInInventoryList,
 
     Count
 };

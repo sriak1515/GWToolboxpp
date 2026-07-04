@@ -600,3 +600,30 @@ private:
     float degree = 0.f;
     float distance = 0.f;
 };
+
+class PlayerIsDrunkCondition : public Condition {
+public:
+    PlayerIsDrunkCondition() = default;
+    PlayerIsDrunkCondition(InputStream&);
+    ConditionType type() const final { return ConditionType::PlayerIsDrunk; }
+    bool check() const final;
+    bool drawSettings() final;
+    void serialize(OutputStream&) const final;
+
+private:
+    int minLevel = 1;
+    bool hasMinLevel = false;
+};
+
+class ItemInInventoryListCondition : public Condition {
+public:
+    ItemInInventoryListCondition() = default;
+    ItemInInventoryListCondition(InputStream&);
+    ConditionType type() const final { return ConditionType::ItemInInventoryList; }
+    bool check() const final;
+    bool drawSettings() final;
+    void serialize(OutputStream&) const final;
+
+private:
+    std::vector<int> modelIds{};
+};

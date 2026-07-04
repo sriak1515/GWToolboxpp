@@ -6,7 +6,7 @@
 namespace {
     ActionPtr makeAction(ActionType type)
     {
-        static_assert((int)ActionType::Count == 47);
+        static_assert((int)ActionType::Count == 48);
         switch (type) {
             case ActionType::MoveTo:
                 return std::make_shared<MoveToAction>();
@@ -98,6 +98,8 @@ namespace {
                 return std::make_shared<LoadSkillbarAction>();
             case ActionType::FlagHero:
                 return std::make_shared<FlagHeroAction>();
+            case ActionType::UseItemList:
+                return std::make_shared<UseItemListAction>();
             default:
                 return nullptr;
         }
@@ -106,7 +108,7 @@ namespace {
 
 std::string_view toString(ActionType type)
 {
-    static_assert((int)ActionType::Count == 47);
+    static_assert((int)ActionType::Count == 48);
     switch (type) {
         case ActionType::MoveTo:
             return "Move to Position";
@@ -198,6 +200,8 @@ std::string_view toString(ActionType type)
             return "Load skillbar";
         case ActionType::FlagHero:
             return "Flag hero";
+        case ActionType::UseItemList:
+            return "Use item from list";
         default:
             return "Unknown";
     }
@@ -205,7 +209,7 @@ std::string_view toString(ActionType type)
 
 ActionPtr readAction(InputStream& stream)
 {
-    static_assert((int)ActionType::Count == 47);
+    static_assert((int)ActionType::Count == 48);
     int type;
 
     stream >> type;
@@ -300,6 +304,8 @@ ActionPtr readAction(InputStream& stream)
             return std::make_shared<LoadSkillbarAction>(stream);
         case ActionType::FlagHero:
             return std::make_shared<FlagHeroAction>(stream);
+        case ActionType::UseItemList:
+            return std::make_shared<UseItemListAction>(stream);
         default:
             return nullptr;
     }
@@ -339,7 +345,7 @@ ActionPtr drawActionSelector(float width)
         drawSubMenu("Skill", std::array{ActionType::Cast, ActionType::CastBySlot, ActionType::DropBuff, ActionType::UseHeroSkill, ActionType::LoadSkillbar});
         drawSubMenu("Interaction", std::array{ActionType::SendDialog, ActionType::GoToTarget, ActionType::AutoAttackTarget});
         drawSubMenu("Targeting", std::array{ActionType::ChangeTarget, ActionType::StoreTarget, ActionType::RestoreTarget, ActionType::ClearTarget});
-        drawSubMenu("Items", std::array{ActionType::EquipItem, ActionType::EquipItemBySlot, ActionType::MoveItemToSlot, ActionType::ChangeWeaponSet, ActionType::UseItem, ActionType::DropItem, ActionType::DestroyItem, ActionType::RepopMinipet, ActionType::UnequipItem});
+        drawSubMenu("Items", std::array{ActionType::EquipItem, ActionType::EquipItemBySlot, ActionType::MoveItemToSlot, ActionType::ChangeWeaponSet, ActionType::UseItem, ActionType::UseItemList, ActionType::DropItem, ActionType::DestroyItem, ActionType::RepopMinipet, ActionType::UnequipItem});
         drawSubMenu("Party", std::array{ActionType::AddHero, ActionType::KickHero, ActionType::FlagHero});
         drawSubMenu("Chat", std::array{ActionType::SendChat, ActionType::PingTarget, ActionType::PingHardMode});
         drawSubMenu("Control flow", std::array{ActionType::Wait, ActionType::WaitUntil, ActionType::StopScript, ActionType::EnterCriticalSection, ActionType::LeaveCriticalSection});

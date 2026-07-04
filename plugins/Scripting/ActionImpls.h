@@ -686,3 +686,17 @@ private:
     float distance = 0.f;
     int hero = 0;
 };
+
+class UseItemListAction : public Action {
+public:
+    UseItemListAction() = default;
+    UseItemListAction(InputStream&);
+    ActionType type() const final { return ActionType::UseItemList; }
+    void initialAction() final;
+    void drawSettings() final;
+    void serialize(OutputStream&) const final;
+    ActionBehaviourFlags behaviour() const final { return ActionBehaviourFlag::ImmediateFinish | ActionBehaviourFlag::CanBeRunInOutpost; }
+
+private:
+    std::vector<int> modelIds{};
+};

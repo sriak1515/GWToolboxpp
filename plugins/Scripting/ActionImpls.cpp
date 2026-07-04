@@ -2732,3 +2732,62 @@ void FlagHeroAction::drawSettings()
 
     ImGui::PopID();
 }
+
+/// ------------- UseItemListAction -------------
+UseItemListAction::UseItemListAction(InputStream& stream)
+{
+    int count;
+    stream >> count;
+    modelIds.resize(count);
+    for (auto& id : modelIds) {
+        stream >> id;
+    }
+}
+void UseItemListAction::serialize(OutputStream& stream) const
+{
+    Action::serialize(stream);
+    stream << static_cast<int>(modelIds.size());
+    for (const auto id : modelIds) {
+        stream << id;
+    }
+}
+void UseItemListAction::initialAction()
+{
+    Action::initialAction();
+
+    for (const auto id : modelIds) {
+        const auto item = FindMatchingItem(id);
+        if (item) {
+            GW::GameThread::Enqueue([item]() -> void {
+                GW::Items::UseItem(item);
+            });
+            return;
+        }
+    }
+}
+void UseItemListAction::drawSettings()
+{
+    ImGui::PushID(drawId());
+    ImGui::Text("Use first available item from list:");
+    for (size_t i = 0; i < modelIds.size(); ++i) {
+        ImGui::PushID(static_cast<int>(i));
+        const auto item = FindMatchingItem(modelIds[i]);
+        auto itemName = item ? InstanceInfo::getInstance().getDecodedItemName(item->item_id) : "";
+        ImGui::SameLine();
+        ImGui::Text("%s", itemName.c_str());
+        ImGui::SameLine();
+        ImGui::PushItemWidth(90.f);
+        ImGui::InputInt("##id", &modelIds[i], 0);
+        ImGui::PopItemWidth();
+        ImGui::SameLine();
+        if (ImGui::Button("X")) {
+            modelIds.erase(modelIds.begin() + i);
+            --i;
+        }
+        ImGui::PopID();
+    }
+    if (ImGui::Button("+")) {
+        modelIds.push_back(0);
+    }
+    ImGui::PopID();
+}
