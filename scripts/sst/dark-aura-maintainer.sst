@@ -1,0 +1,26 @@
+// Dark Aura Maintainer
+// Maintains Dark Aura on the player during combat via a hero.
+//
+// Clipboard import (paste into SST's Import field):
+//   11 6tAWnhki1nhaopaYm3tWmJnXnh_efeeeeefp2rLSuAp2rcrwrvCeeeelbF2rTWqvxbG#zgMHTeq#ygvp2bSqqqq7HvfelbF2bHKqvxd9Gzyp0a
+//
+// To regenerate: python3 tools/sst-import/sst_script_gen.py scripts/sst/dark-aura-maintainer.sst --dry-run
+
+script "Dark Aura Maintainer" {
+    trigger: None
+    canLaunchInParallel: true
+
+    when {
+        FoeCount >= 1
+        not PlayerHasBuff(Dark_Aura)
+        HeroHasSkill(hero: NoHero, skill: Dark_Aura, requirement: ReadyToUse)
+        Throttle(5000ms)
+    }
+
+    then {
+        EnterCriticalSection
+        ChangeTarget(sorting: AgentId, filter: Allegiance(Self))
+        UseHeroSkill(hero: NoHero, skill: Dark_Aura)
+        LeaveCriticalSection
+    }
+}

@@ -74,3 +74,7 @@ GWToolbox.aps
 # VSCode stuff
 .vscode/
 .aider*
+
+# Python
+__pycache__/
+*.pyc
