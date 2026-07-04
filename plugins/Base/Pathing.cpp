@@ -126,7 +126,7 @@ bool hasTerrainClearance(float degree, float distance)
     const auto player = GW::Agents::GetControlledCharacter();
     if (!player) return false;
 
-    const float radiant = degree * std::numbers::pi / 180.f;
+    const float radiant = degree * std::numbers::pi_v<float> / 180.f;
     const float x = player->x + distance * std::cos(player->rotation_angle - radiant);
     const float y = player->y + distance * std::sin(player->rotation_angle - radiant);
 

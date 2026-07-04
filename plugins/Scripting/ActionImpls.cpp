@@ -2683,14 +2683,14 @@ void FlagHeroAction::initialAction()
 
         reference_radiant = std::atan(dx == 0 ? dy : dy / dx);
         if (dx < 0) {
-            reference_radiant += std::numbers::pi;
+            reference_radiant += std::numbers::pi_v<float>;
         }
         else if (dx > 0 && dy < 0) {
-            reference_radiant += 2 * std::numbers::pi;
+            reference_radiant += 2.f * std::numbers::pi_v<float>;
         }
     }
 
-    const float radiant = degree * std::numbers::pi / 180.f;
+    const float radiant = degree * std::numbers::pi_v<float> / 180.f;
     const float x = player->x + distance * std::cos(reference_radiant - radiant);
     const float y = player->y + distance * std::sin(reference_radiant - radiant);
 
