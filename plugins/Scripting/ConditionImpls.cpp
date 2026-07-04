@@ -38,9 +38,6 @@
 #include <algorithm>
 #include <ranges>
 
-#include <IconsFontAwesome5.h>
-#include <Widgets/AlcoholWidget.h>
-
 namespace {
     constexpr double eps = 1e-3;
     constexpr float indent = 30.f;
@@ -2210,7 +2207,7 @@ void PlayerIsDrunkCondition::serialize(OutputStream& stream) const
 }
 bool PlayerIsDrunkCondition::check() const
 {
-    const auto alcoholLevel = AlcoholWidget::Instance().GetAlcoholLevel();
+    const auto alcoholLevel = GetAlcoholLevel();
     if (hasMinLevel && alcoholLevel < DWORD(minLevel)) return false;
     return alcoholLevel > 0;
 }

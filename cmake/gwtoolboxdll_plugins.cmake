@@ -10,6 +10,8 @@ target_sources(plugin_base INTERFACE
     "plugins/Base/PluginUtils.cpp"
     "plugins/Base/ToolboxUIPlugin.h"
     "plugins/Base/ToolboxUIPlugin.cpp"
+    "plugins/Base/Pathing.h"
+    "plugins/Base/Pathing.cpp"
     "GWToolboxdll/RectF.h"
     "GWToolboxdll/MinimapPlugin.h"
     "GWToolboxdll/ToolboxIni.h"
@@ -127,9 +129,6 @@ target_sources(ProjectileIndicator PRIVATE
     "plugins/Base/Rendering.cpp")
 
 add_tb_plugin(ShadowstepPredictor)
-target_sources(ShadowstepPredictor PRIVATE
-    "plugins/Base/Pathing.h"
-    "plugins/Base/Pathing.cpp")
 
 add_tb_plugin(Slowload)
 add_tb_plugin(SpeedrunScriptingTools)
