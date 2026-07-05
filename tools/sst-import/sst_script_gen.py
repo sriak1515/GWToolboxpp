@@ -395,6 +395,18 @@ def parse_condition(line, sep_level=1):
             s.write_separator(sep_level)
         )
 
+    # PlayerHasEnergy(energy: X, comp: Y)
+    m = re.match(r'^PlayerHasEnergy\((.+)\)$', line)
+    if m:
+        kwargs = parse_kwargs(m.group(1))
+        energy = int(kwargs.get("energy", "0"))
+        comp = COMPARISON_OPS.get(kwargs.get("comp", ">="), ComparisonOperator.GreaterOrEqual)
+        return lambda s: (
+            s.write('C').write(ConditionType.PlayerHasEnergy),
+            s.write(energy).write(comp),
+            s.write_separator(sep_level)
+        )
+
     # HeroHasEnergy(hero: X, energy: Y, comp: Z)
     m = re.match(r'^HeroHasEnergy\((.+)\)$', line)
     if m:
@@ -511,6 +523,23 @@ def parse_condition(line, sep_level=1):
         return lambda s: (
             s.write('C').write(ConditionType.HasTerrainClearance),
             s.write(degree).write(distance),
+            s.write_separator(sep_level)
+        )
+
+    # RemainingCooldown(id: X, hasMin: Y, minCooldown: Z, hasMax: W, maxCooldown: V)
+    m = re.match(r'^RemainingCooldown\((.+)\)$', line)
+    if m:
+        kwargs = parse_kwargs(m.group(1))
+        skill_id = SkillID.Skills.get(kwargs.get("id", "No_Skill"), 0)
+        has_min = 1 if kwargs.get("hasMin", "false").lower() == "true" else 0
+        min_cooldown = int(kwargs.get("minCooldown", "0"))
+        has_max = 1 if kwargs.get("hasMax", "false").lower() == "true" else 0
+        max_cooldown = int(kwargs.get("maxCooldown", "0"))
+        return lambda s: (
+            s.write('C').write(ConditionType.RemainingCooldown),
+            s.write(skill_id),
+            s.write(has_min).write(has_max),
+            s.write(min_cooldown).write(max_cooldown),
             s.write_separator(sep_level)
         )
 

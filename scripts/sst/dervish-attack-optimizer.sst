@@ -1,0 +1,120 @@
+// Dervish Attack Optimizer
+// Single hotkey for optimal Dervish attack rotation.
+// Strategy: Cast flash enchantment → Strip with attack → Repeat
+//
+// Priority: Twin Moon Sweep > Eremite's Attack > Flash enchantments (filler)
+//
+// Clipboard import (paste into SST's Import field):
+//   11 6tAXnhvYnlhi09paWSO5C#tYmZi2Ctr#HKuqqqquq#zgwXrO#zgMHTep2bLt9Gv0KygsrrGKqKvKqqqqqSf#BbjfzeeegbsWwWsWwWsrwHbGSfSeKv0vbOSfSeSeqqq#yfDjgbOKqKvOqylbF2WsrrGKqKvKqqqqqSf#BbjfzeeegbsWwWsWwWsrwHbGSfSeKv0vbOSfSeSeqqq#yfDjfAegcWrbbd9Gv0KygcrwHbGSfSeKv0BgIWwWsWrbbd9Gv0KygYrcrwHbGS#BbjgwHbrbKqSfSeKuyjejfzeeeeelbF2WsrwrbbbKuSfSeSfSeKvOqylbBbjfDggXOSfSeSeqqq#yfDjgbWKqKvOqylbF2WsrLOquqzelbBbjejfAegcWx9SeKuyjejfzeeeeelbF2WsrwrbbbKuSfSeSfSeKvOqylbBbjfDggXOSfSeSeqqq#ygwd9a
+//
+// To regenerate: python3 tools/sst-import/sst_script_gen.py scripts/sst/dervish-attack-optimizer.sst --dry-run
+// NOTE: Requires PlayerHasEnergy support in sst_script_gen.py
+
+script "Dervish Attack Optimizer" {
+    trigger: Hotkey
+    canLaunchInParallel: false
+    globallyExclusive: true
+
+    when {
+        FoeCount >= 1
+        Throttle(500ms)
+    }
+
+    then {
+        EnterCriticalSection
+
+        // STEP 1: Ensure a flash enchantment is active (cast whichever is ready)
+        // Try Dust Cloak first
+        Conditioned(
+            cond: And(
+                Or(not PlayerHasBuff(Dust_Cloak), PlayerHasBuff(id: Dust_Cloak, hasMax: true, maxDuration: 2)),
+                PlayerHasSkill(skill: Dust_Cloak, requirement: ReadyToUse),
+                PlayerHasEnergy(energy: 10, comp: GreaterOrEqual)
+            ),
+            then: {
+                Cast(id: Dust_Cloak)
+                Wait(300ms)
+            }
+        )
+
+        // Only try Staggering Force if Dust Cloak wasn't cast (still on cooldown or no energy)
+        Conditioned(
+            cond: And(
+                not PlayerHasSkill(skill: Dust_Cloak, requirement: ReadyToUse),
+                Or(not PlayerHasBuff(Staggering_Force), PlayerHasBuff(id: Staggering_Force, hasMax: true, maxDuration: 2)),
+                PlayerHasSkill(skill: Staggering_Force, requirement: ReadyToUse),
+                PlayerHasEnergy(energy: 10, comp: GreaterOrEqual)
+            ),
+            then: {
+                Cast(id: Staggering_Force)
+                Wait(300ms)
+            }
+        )
+
+        // STEP 2: Strip enchantment with highest priority attack
+        // Twin Moon Sweep - ReadyToUse checks 8 adrenaline automatically
+        Conditioned(
+            cond: PlayerHasSkill(skill: Twin_Moon_Sweep, requirement: ReadyToUse),
+            then: {
+                Cast(id: Twin_Moon_Sweep)
+                Wait(1000ms)
+            }
+        )
+
+        // Eremite's Attack - 5 energy, 6s recharge
+        Conditioned(
+            cond: And(
+                PlayerHasSkill(skill: Eremites_Attack, requirement: ReadyToUse),
+                PlayerHasEnergy(energy: 5, comp: GreaterOrEqual)
+            ),
+            then: {
+                Cast(id: Eremites_Attack)
+                Wait(1000ms)
+            }
+        )
+
+        // STEP 3: Filler enchantments when no attack available AND not close to ready (25 energy threshold)
+        // Only cast filler if both attacks are unavailable and not close to being charged/recharged
+        Conditioned(
+            cond: And(
+                // Twin Moon Sweep not ready (adrenaline not full)
+                not PlayerHasSkill(skill: Twin_Moon_Sweep, requirement: ReadyToUse),
+                // Eremite's Attack not close to ready (cooldown > 3s remaining)
+                RemainingCooldown(id: Eremites_Attack, hasMin: true, minCooldown: 3),
+                // Enchantment missing or expiring
+                Or(not PlayerHasBuff(Dust_Cloak), PlayerHasBuff(id: Dust_Cloak, hasMax: true, maxDuration: 3)),
+                // Enchantment ready to cast
+                PlayerHasSkill(skill: Dust_Cloak, requirement: ReadyToUse),
+                // Enough energy for enchantment + future attack
+                PlayerHasEnergy(energy: 25, comp: GreaterOrEqual)
+            ),
+            then: {
+                Cast(id: Dust_Cloak)
+                Wait(300ms)
+            }
+        )
+
+        Conditioned(
+            cond: And(
+                // Twin Moon Sweep not ready (adrenaline not full)
+                not PlayerHasSkill(skill: Twin_Moon_Sweep, requirement: ReadyToUse),
+                // Eremite's Attack not close to ready (cooldown > 3s remaining)
+                RemainingCooldown(id: Eremites_Attack, hasMin: true, minCooldown: 3),
+                // Dust Cloak not available (on cooldown or no energy)
+                not PlayerHasSkill(skill: Dust_Cloak, requirement: ReadyToUse),
+                // Staggering Force missing or expiring
+                Or(not PlayerHasBuff(Staggering_Force), PlayerHasBuff(id: Staggering_Force, hasMax: true, maxDuration: 3)),
+                // Staggering Force ready to cast
+                PlayerHasSkill(skill: Staggering_Force, requirement: ReadyToUse),
+                // Enough energy for enchantment + future attack
+                PlayerHasEnergy(energy: 25, comp: GreaterOrEqual)
+            ),
+            then: {
+                Cast(id: Staggering_Force)
+                Wait(300ms)
+            }
+        )
+
+        LeaveCriticalSection
+    }
+}
