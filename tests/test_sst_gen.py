@@ -26,6 +26,13 @@ from sst_gen.ast import (
     serialize_script,
     _serialize_condition,
     _serialize_action,
+    IsInCombatCondition,
+    IsInCombat,
+    AgentWithCharacteristicsCountCondition,
+    AllegianceCharacteristic,
+    DistanceToPlayerCharacteristic,
+    AgentType,
+    IsIsNot,
 )
 from sst_gen.parser import parse_sst, parse_sst_file
 from sst_gen.__main__ import generate_import
@@ -341,3 +348,80 @@ script "CooldownTest" {
     _serialize_condition(s, ast.conditions[0])
     output = str(s)
     assert "C 34 " in output
+
+
+# ── 8. IsInCombat condition (3 tests) ──────────────────────────────────────
+
+
+def test_is_in_combat_default_range():
+    cond = IsInCombat()
+    assert cond.range == 1012.0
+    assert cond.comparison == ComparisonOperator.Less
+    expected = AgentWithCharacteristicsCountCondition(
+        characteristics=[
+            AllegianceCharacteristic(agent_type=AgentType.Hostile, comparison=IsIsNot.Is_),
+            DistanceToPlayerCharacteristic(value=1012.0, comparison=ComparisonOperator.Less),
+        ],
+        count=1,
+        comparison=ComparisonOperator.GreaterOrEqual,
+    )
+    s1 = OutputStream()
+    _serialize_condition(s1, cond)
+    s2 = OutputStream()
+    _serialize_condition(s2, expected)
+    assert str(s1) == str(s2)
+
+
+def test_is_in_combat_custom_range():
+    cond = IsInCombat(range=500.0)
+    expected = AgentWithCharacteristicsCountCondition(
+        characteristics=[
+            AllegianceCharacteristic(agent_type=AgentType.Hostile, comparison=IsIsNot.Is_),
+            DistanceToPlayerCharacteristic(value=500.0, comparison=ComparisonOperator.Less),
+        ],
+        count=1,
+        comparison=ComparisonOperator.GreaterOrEqual,
+    )
+    s1 = OutputStream()
+    _serialize_condition(s1, cond)
+    s2 = OutputStream()
+    _serialize_condition(s2, expected)
+    assert str(s1) == str(s2)
+
+
+def test_parse_is_in_combat_bare():
+    text = '''
+script "CombatTest" {
+    trigger: None
+    when {
+        IsInCombat
+    }
+    then {
+        Wait(1000ms)
+    }
+}
+'''
+    ast = parse_sst(text)
+    assert len(ast.conditions) == 1
+    cond = ast.conditions[0]
+    assert isinstance(cond, IsInCombatCondition)
+    assert cond.range == 1012.0
+
+
+def test_parse_is_in_combat_with_range():
+    text = '''
+script "CombatTest2" {
+    trigger: None
+    when {
+        IsInCombat(range: 500)
+    }
+    then {
+        Wait(1000ms)
+    }
+}
+'''
+    ast = parse_sst(text)
+    assert len(ast.conditions) == 1
+    cond = ast.conditions[0]
+    assert isinstance(cond, IsInCombatCondition)
+    assert cond.range == 500.0

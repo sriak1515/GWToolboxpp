@@ -72,8 +72,6 @@ Conditions gate script execution. A script runs only when ALL its conditions are
 | `AgentWithCharacteristicsCount` | `characteristics: vector<CharacteristicPtr>`, `count: int`, `comp: ComparisonOperator` | True if number of matching agents meets comparison |
 | `HasCalledTarget` | — | True if any target has been called by the party |
 
-> **Note:** To check if an enemy is within aggro range (1012 gwinches), use `AgentWithCharacteristicsCount` with an `Allegiance` characteristic set to `Hostile` and a `DistanceToPlayer` characteristic set to `< 1012`.
-
 ### Terrain
 
 | ConditionType | Parameters | Description |

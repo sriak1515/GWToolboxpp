@@ -865,6 +865,17 @@ class HasCalledTargetCondition(Condition):
     pass
 
 
+@dataclass
+class IsInCombatCondition(Condition):
+    range: float = 1012.0
+    comparison: int = 1  # ComparisonOperator.Less
+
+
+def IsInCombat(range: float = 1012.0) -> IsInCombatCondition:
+    """Higher-level condition: true when at least one hostile agent is within range (default 1012 gwinches)."""
+    return IsInCombatCondition(range=range)
+
+
 Condition = Union[
     NegatedCondition,
     ConjunctionCondition,
@@ -914,6 +925,7 @@ Condition = Union[
     PlayerAdrenalineCondition,
     KeyIsPressedCondition,
     HasCalledTargetCondition,
+    IsInCombatCondition,
 ]
 
 
@@ -1600,6 +1612,8 @@ def _serialize_condition(stream, cond):
         _serialize_key_is_pressed_condition(stream, cond)
     elif isinstance(cond, HasCalledTargetCondition):
         _serialize_has_called_target_condition(stream, cond)
+    elif isinstance(cond, IsInCombatCondition):
+        _serialize_is_in_combat_condition(stream, cond)
 
 
 def _serialize_negated_condition(stream, cond):
@@ -1947,6 +1961,17 @@ def _serialize_key_is_pressed_condition(stream, cond):
 def _serialize_has_called_target_condition(stream, cond):
     stream.write('C')
     stream.write(ConditionType.HasCalledTarget)
+
+
+def _serialize_is_in_combat_condition(stream, cond):
+    _serialize_agent_with_characteristics_count_condition(stream, AgentWithCharacteristicsCountCondition(
+        characteristics=[
+            AllegianceCharacteristic(agent_type=AgentType.Hostile, comparison=IsIsNot.Is_),
+            DistanceToPlayerCharacteristic(value=cond.range, comparison=cond.comparison),
+        ],
+        count=1,
+        comparison=ComparisonOperator.GreaterOrEqual,
+    ))
 
 
 # === Action serialization ===

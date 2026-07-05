@@ -54,6 +54,7 @@ script "Script Name" {
 | `RemainingCooldown` | `(skill: SkillName)` |
 | `PlayerIsDead` | (no parameters) |
 | `Throttle` | `(Nms)` |
+| `IsInCombat` | `(range: N)` — true if any hostile agent within range (default 1012 gwinches) |
 | `not` | Wraps any condition: `not PlayerHasBuff(...)` |
 
 ### Supported Actions

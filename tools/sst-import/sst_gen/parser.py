@@ -26,6 +26,7 @@ from .ast import (
     HeroHasEnergyCondition,
     HeroHasSkillCondition,
     HasTerrainClearanceCondition,
+    IsInCombatCondition,
     ItemInInventoryListCondition,
     NegatedCondition,
     OnlyTriggerOnceCondition,
@@ -373,6 +374,9 @@ CONDITION_MAP: dict[str, tuple[int, callable]] = {
     )),
     "OnlyTriggerOncePerInstance": (10, lambda kw: OnlyTriggerOnceCondition()),
     "HasCalledTarget": (64, lambda kw: HasCalledTargetCondition()),
+    "IsInCombat": (48, lambda kw: IsInCombatCondition(
+        range=_parse_number_value(kw.get("range", "1012")),
+    )),
 }
 
 
@@ -587,6 +591,8 @@ class Parser:
             # Bare keyword like Throttle or PlayerIsDrunk (no parens)
             if name == "PlayerIsDrunk":
                 return PlayerIsDrunkCondition()
+            if name == "IsInCombat":
+                return IsInCombatCondition()
             if name == "True_":
                 return TrueCondition()
             if name == "False_":
