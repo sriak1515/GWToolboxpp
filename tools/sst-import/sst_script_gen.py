@@ -39,6 +39,7 @@ class ConditionType:
     HasTerrainClearance = 57; HeroHasEnergy = 58
     HeroHasBuff = 59; PlayerIsDead = 60
     PlayerIsDrunk = 61; ItemInInventoryList = 62
+    PlayerAdrenaline = 63
 
 class ActionType:
     MoveTo = 0; Cast = 2; CastBySlot = 3; DropBuff = 4
@@ -540,6 +541,19 @@ def parse_condition(line, sep_level=1):
             s.write(skill_id),
             s.write(has_min).write(has_max),
             s.write(min_cooldown).write(max_cooldown),
+            s.write_separator(sep_level)
+        )
+
+    # PlayerAdrenaline(skill: X, adrenaline: Y, comp: Z)
+    m = re.match(r'^PlayerAdrenaline\((.+)\)$', line)
+    if m:
+        kwargs = parse_kwargs(m.group(1))
+        skill_id = SkillID.Skills.get(kwargs.get("skill", "No_Skill"), 0)
+        adrenaline = int(kwargs.get("adrenaline", "0"))
+        comp = COMPARISON_OPS.get(kwargs.get("comp", ">="), ComparisonOperator.GreaterOrEqual)
+        return lambda s: (
+            s.write('C').write(ConditionType.PlayerAdrenaline),
+            s.write(skill_id).write(adrenaline).write(comp),
             s.write_separator(sep_level)
         )
 

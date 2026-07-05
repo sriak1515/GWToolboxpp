@@ -9,7 +9,7 @@ namespace
 {
 ConditionPtr makeCondition(ConditionType type)
 {
-    static_assert((int)ConditionType::Count == 60);
+    static_assert((int)ConditionType::Count == 61);
     switch (type) {
         case ConditionType::Not:
             return std::make_shared<NegatedCondition>();
@@ -109,6 +109,9 @@ ConditionPtr makeCondition(ConditionType type)
         case ConditionType::ItemInInventoryList:
             return std::make_shared<ItemInInventoryListCondition>();
 
+        case ConditionType::PlayerAdrenaline:
+            return std::make_shared<PlayerAdrenalineCondition>();
+
         default:
             return nullptr;
     }
@@ -116,7 +119,7 @@ ConditionPtr makeCondition(ConditionType type)
 
 std::string_view toString(ConditionType type)
 {
-    static_assert((int)ConditionType::Count == 60);
+    static_assert((int)ConditionType::Count == 61);
     switch (type) {
         case ConditionType::Not:
             return "Not";
@@ -212,6 +215,9 @@ std::string_view toString(ConditionType type)
 
         case ConditionType::ItemInInventoryList:
             return "Item in inventory (list)";
+
+        case ConditionType::PlayerAdrenaline:
+            return "Player adrenaline";
 
         default:
             return "Unknown";
@@ -323,6 +329,9 @@ switch (static_cast<ConditionType>(type))
     case ConditionType::ItemInInventoryList:
         return std::make_shared<ItemInInventoryListCondition>(stream);
 
+    case ConditionType::PlayerAdrenaline:
+        return std::make_shared<PlayerAdrenalineCondition>(stream);
+
     default:
         return nullptr;
 }
@@ -356,7 +365,7 @@ ConditionPtr drawConditionSelector(float width)
         ImGui::OpenPopup("Add condition");
     }
 
-    constexpr auto skillConditions = std::array{ConditionType::PlayerHasBuff, ConditionType::PlayerHasSkill, ConditionType::PlayerHasSkillBySlot, ConditionType::RemainingCooldown, ConditionType::PlayerHasEnergy, ConditionType::PlayerHasEnergyRegen, ConditionType::PlayerMorale};
+    constexpr auto skillConditions = std::array{ConditionType::PlayerHasBuff, ConditionType::PlayerHasSkill, ConditionType::PlayerHasSkillBySlot, ConditionType::RemainingCooldown, ConditionType::PlayerHasEnergy, ConditionType::PlayerHasEnergyRegen, ConditionType::PlayerMorale, ConditionType::PlayerAdrenaline};
     constexpr auto itemConditions = std::array{ConditionType::PlayerHasItemEquipped, ConditionType::ItemInInventory, ConditionType::CanPopAgent};
     constexpr auto partyConditions = std::array{ConditionType::PartyPlayerCount, ConditionType::PartyHasLoadedIn, ConditionType::PartyMemberStatus, ConditionType::HasPartyWindowAllyOfName, ConditionType::HeroHasSkill};
     constexpr auto instanceConditions = std::array{ConditionType::IsInMap, ConditionType::InstanceType, ConditionType::DoorStatus, ConditionType::ObjectiveHasState, ConditionType::QuestHasState, ConditionType::InstanceProgress, ConditionType::InstanceTime, ConditionType::FoeCount};

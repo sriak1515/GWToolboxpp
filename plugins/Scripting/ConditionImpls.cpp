@@ -2290,3 +2290,46 @@ bool ItemInInventoryListCondition::drawSettings()
     ImGui::PopID();
     return false;
 }
+
+/// ------------- PlayerAdrenalineCondition -------------
+PlayerAdrenalineCondition::PlayerAdrenalineCondition(InputStream& stream)
+{
+    stream >> skillId >> adrenaline >> comp;
+}
+void PlayerAdrenalineCondition::serialize(OutputStream& stream) const
+{
+    Condition::serialize(stream);
+    stream << skillId << adrenaline << comp;
+}
+bool PlayerAdrenalineCondition::check() const
+{
+    const auto bar = GW::SkillbarMgr::GetPlayerSkillbar();
+    if (!bar || !bar->IsValid()) return false;
+
+    for (int i = 0; i < 8; ++i)
+    {
+        if (bar->skills[i].skill_id == skillId)
+        {
+            const auto currentAdrenaline = (int)bar->skills[i].adrenaline_a;
+            return checkComparison(currentAdrenaline, adrenaline, comp);
+        }
+    }
+    return false;
+}
+bool PlayerAdrenalineCondition::drawSettings()
+{
+    ImGui::PushID(drawId());
+    ImGui::Text("If player's adrenaline for skill");
+    ImGui::SameLine();
+    drawSkillIDSelector(skillId);
+    ImGui::SameLine();
+    ImGui::Text("is");
+    ImGui::SameLine();
+    drawComparisonOperator(comp);
+    ImGui::SameLine();
+    ImGui::PushItemWidth(60.f);
+    ImGui::InputInt("##adrenaline", &adrenaline, 0);
+    ImGui::PopItemWidth();
+    ImGui::PopID();
+    return false;
+}

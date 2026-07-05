@@ -5,7 +5,7 @@
 // Priority: Twin Moon Sweep > Eremite's Attack > Flash enchantments (filler)
 //
 // Clipboard import (paste into SST's Import field):
-//   11 6tAXnhvYnlhi09paWSO5C#tYmZi2Ctr#HKuqqqquq#zgwXrO#zgMHTep2bLt9Gv0KygsrrGKqKvKqqqqqSf#BbjfzeeegbsWwWsWwWsrwHbGSfSeKv0vbOSfSeSeqqq#yfDjgbOKqKvOqylbF2WsrrGKqKvKqqqqqSf#BbjfzeeegbsWwWsWwWsrwHbGSfSeKv0vbOSfSeSeqqq#yfDjfAegcWrbbd9Gv0KygcrwHbGSfSeKv0BgIWwWsWrbbd9Gv0KygYrcrwHbGS#BbjgwHbrbKqSfSeKuyjejfzeeeeelbF2WsrwrbbbKuSfSeSfSeKvOqylbBbjfDggXOSfSeSeqqq#yfDjgbWKqKvOqylbF2WsrLOquqzelbBbjejfAegcWx9SeKuyjejfzeeeeelbF2WsrwrbbbKuSfSeSfSeKvOqylbBbjfDggXOSfSeSeqqq#ygwd9a
+//   11 6tAXnhvYnlhi09paWSO5C#tYmZi2Ctr#HKuqqqquq#zgwXrO#zgMHTep2bLt9Gv0KygsrrGKqKvKqqqqqSf#BbjfzeeegbsWwWsWwWsrwHbGSfSeKv0vbOSfSeSeqqq#yfDjgbOKqKvOqylbF2WsrrGKqKvKqqqqqSf#BbjfzeeegbsWwWsWwWsrwHbGSfSeKv0vbOSfSeSeqqq#yfDjfAegcWrbbd9Gv0KygcrwHbGSfSeKv0BgIWwWsWrbbd9Gv0KygYrXKqBgIWwWsrLOquqzelbBbjfgcrcrwrbbbbcWx9SeKvKqqqzflbBblbBbjfAegcWwWsrxrHSAlbBblbeeep2bxsrGCjhgrbSAlbBbjgwHbrbKqSfSeKqKvOqylbF2WsrrGKqKvKqqqqqSf#BbjfzeeegrsWwWsWwWsrwHbGSfSeKv0yBgIWwWsWrbbd9Gzyp0
 //
 // To regenerate: python3 tools/sst-import/sst_script_gen.py scripts/sst/dervish-attack-optimizer.sst --dry-run
 // NOTE: Requires PlayerHasEnergy support in sst_script_gen.py
@@ -77,8 +77,8 @@ script "Dervish Attack Optimizer" {
         // Only cast filler if both attacks are unavailable and not close to being charged/recharged
         Conditioned(
             cond: And(
-                // Twin Moon Sweep not ready (adrenaline not full)
-                not PlayerHasSkill(skill: Twin_Moon_Sweep, requirement: ReadyToUse),
+                // Twin Moon Sweep not ready (adrenaline < 5, not close to 8)
+                PlayerAdrenaline(skill: Twin_Moon_Sweep, adrenaline: 5, comp: Less),
                 // Eremite's Attack not close to ready (cooldown > 3s remaining)
                 RemainingCooldown(id: Eremites_Attack, hasMin: true, minCooldown: 3),
                 // Enchantment missing or expiring
@@ -96,8 +96,8 @@ script "Dervish Attack Optimizer" {
 
         Conditioned(
             cond: And(
-                // Twin Moon Sweep not ready (adrenaline not full)
-                not PlayerHasSkill(skill: Twin_Moon_Sweep, requirement: ReadyToUse),
+                // Twin Moon Sweep not ready (adrenaline < 5, not close to 8)
+                PlayerAdrenaline(skill: Twin_Moon_Sweep, adrenaline: 5, comp: Less),
                 // Eremite's Attack not close to ready (cooldown > 3s remaining)
                 RemainingCooldown(id: Eremites_Attack, hasMin: true, minCooldown: 3),
                 // Dust Cloak not available (on cooldown or no energy)

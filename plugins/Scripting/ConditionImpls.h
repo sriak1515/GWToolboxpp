@@ -627,3 +627,18 @@ public:
 private:
     std::vector<int> modelIds{};
 };
+
+class PlayerAdrenalineCondition : public Condition {
+public:
+    PlayerAdrenalineCondition() = default;
+    PlayerAdrenalineCondition(InputStream&);
+    ConditionType type() const final { return ConditionType::PlayerAdrenaline; }
+    bool check() const final;
+    bool drawSettings() final;
+    void serialize(OutputStream&) const final;
+
+private:
+    GW::Constants::SkillID skillId = GW::Constants::SkillID::No_Skill;
+    int adrenaline = 0;
+    ComparisonOperator comp = ComparisonOperator::GreaterOrEqual;
+};

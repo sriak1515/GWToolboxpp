@@ -46,6 +46,7 @@ Conditions gate script execution. A script runs only when ALL its conditions are
 | `PlayerHasCharacteristics` | `characteristic: CharacteristicPtr` | True if player matches characteristic |
 | `RemainingCooldown` | `id: SkillID`, `hasMin/hasMax: bool`, `minCooldown/maxCooldown: int` | True if skill cooldown is in range |
 | `PlayerIsDrunk` | `minLevel: int` (optional), `hasMinLevel: bool` (optional) | True if player's alcohol level > 0 (or >= minLevel if specified) |
+| `PlayerAdrenaline` | `skill: SkillID`, `adrenaline: int`, `comp: ComparisonOperator` | True if player's adrenaline for skill meets comparison |
 
 ### Hero
 
