@@ -1,0 +1,58 @@
+// ST Combat Prep
+// Prepares an ST (Soul Twisting) hero for combat.
+// Casting order: Soul Twisting -> Shelter -> Union -> Armor of Unfeeling.
+//
+// Clipboard import (paste into SST's Import field):
+//   11 6tP6IC7mWCdtoBrXm8#HKuqqqqqquq#zgwXrO#zg3bbuBEgd9KAAg0rd9Gzu#yggrbuBEp2bwHHeq#yggrb5xd9GvOvTep2bHKqDABp2bwHw0q#yggrbuBq#ygwd9a
+//
+// Soul Twisting reduces Binding Ritual costs by 15 (min 10) and makes them
+// recharge instantly for 45s, ending after 3 rituals.
+// Shelter must be cast before Union (most protective first, within 3 charges).
+// Armor of Unfeeling is cast after spirits are summoned so it applies to them.
+//
+// Energy budget (60 max, Spawning Power max):
+//   Soul Twisting:       5 e
+//   Shelter (after ST): 10 e  (25 - 15, min 10)
+//   Union (after ST):   10 e  (15 - 15, min 10)
+//   Armor of Unfeeling:  0 e  (shout)
+//   Total:              25 e
+//
+// NOTE: PlayerHasEnergy checks the PLAYER, not the hero.
+//       The hero AI manages its own energy. If the hero lacks energy,
+//       casts will simply not go off.
+
+script "ST Combat Prep" {
+    trigger: Hotkey
+    canLaunchInParallel: false
+    globallyExclusive: true
+
+    when {
+        // Only prep when there are enemies
+        FoeCount >= 1
+        // Hero must have Soul Twisting ready
+        HeroHasSkill(hero: NoHero, skill: Soul_Twisting, requirement: ReadyToUse)
+        // Prevent spam-casting (adjust ms as needed)
+        Throttle(5000ms)
+    }
+
+    then {
+        EnterCriticalSection
+
+        // 1. Cast Soul Twisting (5e, enables cheap spirits for 45s)
+        UseHeroSkill(hero: NoHero, skill: Soul_Twisting)
+        Wait(2000ms)
+
+        // 2. Cast Shelter (10e after ST; most protective, cast first)
+        UseHeroSkill(hero: NoHero, skill: Shelter)
+        Wait(1500ms)
+
+        // 3. Cast Union (10e after ST; second spirit, within 3-charge limit)
+        UseHeroSkill(hero: NoHero, skill: Union)
+        Wait(1500ms)
+
+        // 4. Cast Armor of Unfeeling after spirits are summoned (0e, shout)
+        UseHeroSkill(hero: NoHero, skill: Armor_of_Unfeeling)
+
+        LeaveCriticalSection
+    }
+}

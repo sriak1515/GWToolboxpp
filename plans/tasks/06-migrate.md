@@ -14,6 +14,18 @@ This is a one-time operation. Write a short standalone script (or do it by hand)
 3. Manually review each file
 4. Run the test suite to verify
 
+## Files to migrate (9 total)
+
+- `dark-aura-maintainer.sst`
+- `dervish-attack-optimizer.sst` (newest, added 2026-07-05)
+- `drunken-master-maintainer.sst`
+- `flag-formation-auto.sst`
+- `flag-narrow-formation.sst`
+- `flag-wide-formation.sst`
+- `soh-maintainer.sst`
+- `soul-taker-self-buff-maintainer.sst`
+- `st-combat-prep.sst`
+
 ## What changes per file
 
 | Old syntax | New syntax |
@@ -27,3 +39,5 @@ This is a one-time operation. Write a short standalone script (or do it by hand)
 ## Verification
 
 After migration, `python3 sst_gen.py --dry-run <file>` must produce the exact same import string as the old tool did for each file. The binary output must not change.
+
+Note: `dervish-attack-optimizer.sst` is new and won't have an old import string to compare against. Verify it generates a valid import string that can be decoded back to the same binary.

@@ -53,6 +53,8 @@ Conditions gate script execution. A script runs only when ALL its conditions are
 | ConditionType | Parameters | Description |
 |--------------|-----------|-------------|
 | `HeroHasSkill` | `heroId: HeroID`, `skillId: SkillID`, `requirement: HasSkillRequirement` | True if hero has skill |
+| `HeroHasEnergy` | `heroId: HeroID`, `energy: int`, `comp: ComparisonOperator` | True if hero's energy meets comparison |
+| `HeroHasBuff` | `heroId: HeroID`, `skillId: SkillID` | True if hero has buff with duration range (same params as PlayerHasBuff) |
 
 ### Items
 

@@ -3,7 +3,7 @@
 // Recasts when the buff expires during combat.
 //
 // Clipboard import (paste into SST's Import field):
-//   11 6tPZT448diZDpaYm3e0F4quqqqqqu#zgwXrO#zejfzggMrbbbcWx9KBCeggMrG#zgMHLeq#ygvp2bSqqqq7HvfelbF2bHKqyAzp2bLG#qa
+//   11 6tPZT448diZDpaYm3e0t_efeeeeefp2rLSuAp2rcrwrHPKqqqq#zg3bbHPKyp2rPOzrep2bLt9Gv8u#ygXbbbdUfuuqSf#yggrbHPK#ygefp2bLG#q
 //
 // To regenerate: python3 tools/sst-import/sst_script_gen.py scripts/sst/soh-maintainer.sst --dry-run
 

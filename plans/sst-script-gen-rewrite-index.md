@@ -4,6 +4,13 @@
 
 `tools/sst-import/sst_script_gen.py` converts `.sst` text files into clipboard-importable strings for SST's GUI import. The existing script has fundamental architectural bugs. **Do not use the existing script as reference code.** Write everything from scratch, using only the C++ source in `plugins/Scripting/` as the source of truth for the binary serialization format.
 
+## Recent Changes (as of 2026-07-05)
+
+- Added `PlayerAdrenaline` condition type (ID 63) for checking adrenaline of specific skills
+- Added `PlayerHasEnergy` condition parser support
+- Added `RemainingCooldown` condition parser support
+- New script: `dervish-attack-optimizer.sst` (9 total SST files now)
+
 ## Goal
 
 A single-file Python tool (`tools/sst-import/sst_gen.py`) that:

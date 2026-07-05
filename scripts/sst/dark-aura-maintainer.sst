@@ -2,7 +2,7 @@
 // Maintains Dark Aura on the player during combat via a hero.
 //
 // Clipboard import (paste into SST's Import field):
-//   11 6tAWnhki1nhaopaYm3tWmJnXnh_efeeeeefp2rLSuAp2rcrwrvCeeeelbF2rTWqvxbG#zgMHTeq#ygvp2bSqqqq7HvfelbF2bHKqvxd9Gzyp0a
+//   11 6tAWnhki1nhaopaYm3tWmJnXne#Hbrbbbbbt9KzBfgJ9KqKvKvxbbbbd9KBCefvWyp2rPOBrep2bLt9Gv8u#ygXbbbdUfuuqSf#yggrbvCp2bHbt9Gzyp0
 //
 // To regenerate: python3 tools/sst-import/sst_script_gen.py scripts/sst/dark-aura-maintainer.sst --dry-run
 

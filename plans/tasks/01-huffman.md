@@ -78,6 +78,7 @@ Reverses the encoding. From `io.cpp:295-403`.
 After implementing, test round-trip on these strings:
 - `"S Test  0 1 0 0 0 0 0 0 \x7f C 38 \x7f A 14 1000 \x7f"`
 - The known encoded string from `dark-aura-maintainer.sst` header — decode it, re-encode it, verify identity
+- The encoded string from `dervish-attack-optimizer.sst` header — verify it contains the new condition types
 
 ## Reference
 

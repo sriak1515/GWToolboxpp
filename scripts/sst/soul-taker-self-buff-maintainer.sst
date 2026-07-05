@@ -4,7 +4,7 @@
 // Switches to weapon set 2 before casting, then back to set 1.
 //
 // Clipboard import (paste into SST's Import field):
-//   11 6tPZTtloRaYStroNeY8x38DtfXtJWmJn08diZCtr#Hbrbbbbbt9KzBfgJ9KAAgurd9KuAjejfzgwMgrbbbcWx9SeKvKzAyzeegXsWwWsrcrwrHwxXbbbcWx9SeKvKyvL8qqBflbBbp2rwHLPHKyp2bLt9Gv4yp2bwHTep2bxsrrGKqKvKzAyzeeeelbF2WsrwrLPHKqqBflbBblbeeep2bxsrrGKqKvKyvL8qqqqSf#BbjfzgfzFeegXsWwWsWrbbd9Gv4u#ygwd9a
+//   11 6tPZTtloRaYStroNeY8x38DtfXtJWmJn08diZCtrp4quqqqqqu#zgwXrO#zgMHLeq#zfgIrcrwrLPHKqqqqSeKvKzAyzegXbsWsrcrwrHwxXbbbcWsrwrHwxXbSquSe#zfAgwMgrG#ygvp2bxHG#yfAg0q#yfDjfgcrcrwrLPHKqqqqSeKvKzAyzegXbsWsWrGGygwMgsWsbwHTelbeep2bxsrrGKqKvKyvL8qqqqSeKvKyvL8qBeflblbgcbGyvL8SeGvOBrcWrbd9Gv4u#ygwd9a
 //
 // To regenerate: python3 tools/sst-import/sst_script_gen.py scripts/sst/soul-taker-self-buff-maintainer.sst --dry-run
 

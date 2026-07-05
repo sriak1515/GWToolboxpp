@@ -78,3 +78,8 @@ GWToolbox.aps
 # Python
 __pycache__/
 *.pyc
+
+# SST script gen temp files
+tools/sst-import/huff_test.txt
+tools/sst-import/test_out.txt
+tools/sst-import/test_parser.py

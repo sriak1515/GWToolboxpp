@@ -6,7 +6,7 @@
 // Area: Wide open spaces
 //
 // Clipboard import (paste into SST's Import field):
-//   11 6tTYmpenZo0CZa08JoZF4zfeeeeeep2rL4#yfBepZfY8dgmllXmdr#J9GvOvep2bPWyDsKgNwkuu#yfAg0p2bPWyAzPPKyEyP5Wyp2bwHTd9GACfEsKfyCPSzp2bwHTd9GACfvYM3rH5INNbO#yfAg0p2bPWFsKgNwkuBp2bwHTd9GACgesLgxhQrKCp2bwHTd9GA...
+//   11 6tTYmpenZo0CZa08JoZt_grrbbbbbbbd9KzEp2bwXd8XCVaXSllXmdrp4#yfAfrd9GACghugNwkuu#yfAg0p2bPWyAzPPKyEyP5Wyp2bwHTd9GACfEqvHYMXK#yfAg0p2bPWvxkBDghMkECgJ9GvOBq#ygNb9bP1ILgZ9GvOBq#ygNbHePrLX6Kzhd9GvOBq#ygNbw36FgxhQrKDp0
 //
 // To regenerate: python3 tools/sst-import/sst_script_gen.py scripts/sst/flag-wide-formation.sst --dry-run
 

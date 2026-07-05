@@ -216,19 +216,21 @@ script "OrTest":
     assert isinstance(ast.conditions[0], DisjunctionCondition)
 ```
 
-### 5. Full pipeline tests (7 tests, one per .sst file)
+### 5. Full pipeline tests (9 tests, one per .sst file)
 
 For each existing `.sst` file, generate the import string and verify it round-trips correctly.
 
 ```python
 SST_FILES = [
     "scripts/sst/dark-aura-maintainer.sst",
+    "scripts/sst/dervish-attack-optimizer.sst",
     "scripts/sst/drunken-master-maintainer.sst",
     "scripts/sst/flag-formation-auto.sst",
     "scripts/sst/flag-narrow-formation.sst",
     "scripts/sst/flag-wide-formation.sst",
     "scripts/sst/soh-maintainer.sst",
     "scripts/sst/soul-taker-self-buff-maintainer.sst",
+    "scripts/sst/st-combat-prep.sst",
 ]
 
 @pytest.mark.parametrize("filepath", SST_FILES)
@@ -265,4 +267,63 @@ def test_drunken_master_nested_conditioned():
     # Inner has then and else
     assert len(inner.actions_if) == 2  # UseItemList + Wait
     assert len(inner.actions_else) == 1  # SendChat
+```
+
+### 7. New condition types (3 tests)
+
+Test the recently added condition types:
+
+```python
+def test_parse_player_adrenaline():
+    """PlayerAdrenaline condition was added in 2026-07-05."""
+    text = '''
+script "AdrenalineTest":
+    trigger: None
+    when:
+        PlayerAdrenaline(skill: Eremite_s_Attack, adrenaline: 5, comp: <)
+    then:
+        Wait(ms: 1000)
+'''
+    ast = parse(text)
+    assert len(ast.conditions) == 1
+    cond = ast.conditions[0]
+    # Verify it's the right condition type by checking serialization
+    s = OutputStream()
+    cond(s)
+    output = str(s)
+    assert "C 63 " in output  # PlayerAdrenaline = 63
+
+def test_parse_player_has_energy():
+    """PlayerHasEnergy condition."""
+    text = '''
+script "EnergyTest":
+    trigger: None
+    when:
+        PlayerHasEnergy(energy: 10, comp: >=)
+    then:
+        Wait(ms: 1000)
+'''
+    ast = parse(text)
+    assert len(ast.conditions) == 1
+    s = OutputStream()
+    ast.conditions[0](s)
+    output = str(s)
+    assert "C 17 " in output  # PlayerHasEnergy = 17
+
+def test_parse_remaining_cooldown():
+    """RemainingCooldown condition."""
+    text = '''
+script "CooldownTest":
+    trigger: None
+    when:
+        RemainingCooldown(id: Dark_Aura, hasMin: false, minCooldown: 0, hasMax: true, maxCooldown: 5000)
+    then:
+        Wait(ms: 1000)
+'''
+    ast = parse(text)
+    assert len(ast.conditions) == 1
+    s = OutputStream()
+    ast.conditions[0](s)
+    output = str(s)
+    assert "C 34 " in output  # RemainingCooldown = 34
 ```

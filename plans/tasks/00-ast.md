@@ -48,7 +48,7 @@ class Script:
 
 One dataclass per `ConditionType` value. Every dataclass inherits from a `Condition` base with a `type_id` class variable.
 
-Cover all 60 condition types from `Condition.h:8`. The ones used in existing scripts:
+Cover all 63 condition types from `Condition.h:8`. The ones used in existing scripts:
 
 - `TrueCondition`, `FalseCondition`
 - `NegatedCondition(cond)`
@@ -90,6 +90,9 @@ Cover all 60 condition types from `Condition.h:8`. The ones used in existing scr
 - `UntilCondition(cond)`, `OnceCondition(cond)`, `AfterCondition(cond)`
 - `ToggleCondition(default_state, toggle_on_cond, toggle_off_cond)`
 - `CanPopAgentCondition`
+- `HeroHasEnergyCondition(hero_id, energy, comparison)`
+- `HeroHasBuffCondition(hero_id, skill_id)`
+- `PlayerAdrenalineCondition(skill_id, adrenaline, comparison)`
 
 Plus the `Characteristics` subtypes (used by `PlayerHasCharacteristics`, `TargetHasCharacteristics`, `AgentWithCharacteristicsCount`, and `ChangeTarget` filters):
 

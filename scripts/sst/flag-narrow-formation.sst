@@ -6,7 +6,7 @@
 // Area: Narrow spaces (dungeons, corridors)
 //
 // Clipboard import (paste into SST's Import field):
-//   11 6tKWnhrZTy3m7rZmdtYm7n#HKuqqqqqq#zgxJ9GvSq#mxlWmyWSVeWnh_p2bwHuq#ygNbH1kqyBzPbt9GvOBq#ygNbHHMNNbHH2M2XG#yfAg0p2bPWv5kqyv_Lgt9GvOBq#ygNbwxkvOyyDPTSAp2bwHTd9GACh0PbHTMKgZ9GvOBq#ygNbHePX8AABP5KCp2bwHT...
+//   11 6tKWnhrZTy3m7rZmdtYm7np4zfeeeeeeeep2rL4#yfBepZfY8dgWSVeWne#J9GvOvep2bPWyDqyBzfp2bwHTd9GACgggAECgghABBgd9GvOBq#ygNbxKgfFPrK#yfAg0p2bPWvLYLAgghABBgJ9GvOBq#ygNb9bHTKBp2bwHTd9GACgesNhXPPUNMrW#yfAg0p2bPWvT_MvgMM6Ezht9
 //
 // To regenerate: python3 tools/sst-import/sst_script_gen.py scripts/sst/flag-narrow-formation.sst --dry-run
 

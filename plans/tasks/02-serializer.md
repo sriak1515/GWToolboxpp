@@ -204,3 +204,4 @@ Build ASTs by hand for the simplest scripts and compare serialized output:
 1. `soh-maintainer.sst` — simple conditions + simple actions
 2. `dark-aura-maintainer.sst` — `not` condition, `HeroHasSkill`, `ChangeTarget` with `Allegiance` characteristic
 3. `drunken-master-maintainer.sst` — nested `ConditionedAction`
+4. `dervish-attack-optimizer.sst` — uses `PlayerAdrenaline`, `RemainingCooldown`, `PlayerHasEnergy` conditions

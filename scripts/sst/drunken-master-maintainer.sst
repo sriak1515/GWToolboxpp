@@ -7,7 +7,7 @@
 // Any drink item from Guild Wars will work (ales, wines, grog, brandy, etc.)
 //
 // Clipboard import (paste into SST's Import field):
-//   TODO: Generate after script is finalized
+//   11 6tA0DtnYStnopa0Tpe0tJWmJn08diZCtrp4quqqqqqu#zgwXrO#zejfzgerrbbbd9KvOyrfgd9KAAgurd9Gv0KqKCuuqSeAigvlbifDjhgbrXL1SSeyigNrrXL1SSeGvOveqSeuGvSDlw9RJ48diZDpaYm3e0BxE3a0C3iZCAZRKZSdlWS7hZSViZCJn1Ctn087r2pi#IWrcWsbGyrflbigwcWrKGzuSeGygersWsbLGSeq#qa
 //
 // To regenerate: python3 tools/sst-import/sst_script_gen.py scripts/sst/drunken-master-maintainer.sst --dry-run
 

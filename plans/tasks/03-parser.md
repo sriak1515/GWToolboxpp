@@ -165,6 +165,11 @@ CONDITION_MAP = {
     "PlayerHasCharacteristics": (46, lambda kw: PlayerHasCharacteristicsCondition(...)),
     "TargetHasCharacteristics": (47, lambda kw: TargetHasCharacteristicsCondition(...)),
     "AgentWithCharacteristicsCount": (48, lambda kw: AgentWithCharacteristicsCountCondition(...)),
+    "PlayerHasEnergy": (17, lambda kw: PlayerHasEnergyCondition(kw['energy'], kw['comp'])),
+    "HeroHasEnergy": (58, lambda kw: HeroHasEnergyCondition(...)),
+    "HeroHasBuff": (59, lambda kw: HeroHasBuffCondition(...)),
+    "RemainingCooldown": (34, lambda kw: RemainingCooldownCondition(...)),
+    "PlayerAdrenaline": (63, lambda kw: PlayerAdrenalineCondition(kw['skill'], kw['adrenaline'], kw['comp'])),
     # ... etc for all conditions
 }
 ```
@@ -188,8 +193,9 @@ ACTION_MAP = {
 
 ## Verification
 
-Parse each of the 7 existing `.sst` files and dump the AST. Verify:
+Parse each of the 9 existing `.sst` files and dump the AST. Verify:
 - Correct number of conditions and actions
 - Nested `ConditionedAction` in `drunken-master-maintainer.sst` is properly tree-shaped
 - `Or(...)` in `soul-taker-self-buff-maintainer.sst` parses correctly
 - All kwargs are captured
+- `dervish-attack-optimizer.sst` parses `PlayerAdrenaline`, `RemainingCooldown`, `PlayerHasEnergy` conditions correctly
