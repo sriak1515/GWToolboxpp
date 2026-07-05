@@ -76,10 +76,20 @@ script "Script Name" {
 | `SetVariable` | `(name: X, value: Y, preserve: Z)` |
 | `Conditioned` | `(cond: Condition, then: {...}, else: {...})` |
 
+### Regenerating Constants
+
+Skill and hero ID mappings are auto-generated from the C++ headers in `Dependencies/GWCA/`. If those headers change, regenerate:
+
+```bash
+python3 -m sst_gen.generate_constants
+```
+
+This produces `sst_gen/constants_generated.py` which is imported at parse time.
+
 ### Supported Values
 
-- **SkillName**: `No_Skill`, `Dark_Aura`, `Strength_of_Honor`, `Soul_Twisting`, `Shelter`, `Union`, `Armor_of_Unfeeling`, `Displacement`, `Drunken_Master`, `Masochism`, `Soul_Taker`, ...
-- **HeroID**: `NoHero`, `Norgu`, `Goren`, `Tahlkora`, `MasterOfWhispers`, ...
+- **SkillName**: `No_Skill`, `Dark_Aura`, `Strength_of_Honor`, `Soul_Twisting`, `Shelter`, `Union`, `Armor_of_Unfeeling`, `Displacement`, `Drunken_Master`, `Masochism`, `Soul_Taker`, ... (numeric IDs like `2218` also work)
+- **HeroID**: `NoHero`, `Norgu`, `Goren`, `Tahlkora`, `MasterOfWhispers`, ..., `Ogden`, `Merc1`..`Merc8`, `Miku`, `ZeiRi`, `Devona`, `GhostOfAlthea`
 - **Sorting**: `AgentId`, `ClosestToPlayer`, `FurthestFromPlayer`, `ClosestToTarget`, `FurthestFromTarget`, `LowestHp`, `HighestHp`, `ModelID`
 - **Filter**: `Allegiance(Self)`, `Allegiance(PartyMember)`, `Allegiance(Hostile)`
 - **Trigger**: `None`, `InstanceLoad`, `HardModePing`, `Hotkey`, `ChatMessage`

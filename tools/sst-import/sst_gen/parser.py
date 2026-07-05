@@ -241,32 +241,33 @@ COMPARISON_OPS = {
 
 
 def _resolve_skill(name: str) -> int:
-    """Resolve a skill name to its numeric ID."""
-    SKILLS = {
-        "No_Skill": 0, "Dark_Aura": 116, "Strength_of_Honor": 243,
-        "Union": 745, "Shelter": 816, "Armor_of_Unfeeling": 1050,
-        "Soul_Twisting": 1058, "Displacement": 1067,
-        "Summon_Spirits_luxon": 1838, "Summon_Spirits_kurzick": 1887,
-        "Drunken_Master": 2001, "Masochism": 2139, "Soul_Taker": 3423,
-        "Dust_Cloak": 2228, "Staggering_Force": 1579,
-        "Twin_Moon_Sweep": 2863, "Eremites_Attack": 3143,
-    }
-    return SKILLS.get(name, 0)
+    """Resolve a skill name to its numeric ID.
+
+    Falls back to interpreting ``name`` as a plain integer so that scripts
+    can use ``Cast(id: 2218)`` directly when a name isn't in the mapping.
+    """
+    from .constants_generated import SKILL_IDS
+
+    val = SKILL_IDS.get(name)
+    if val is not None:
+        return val
+    try:
+        return int(name)
+    except ValueError:
+        return 0
 
 
 def _resolve_hero(name: str) -> int:
-    HEROES = {
-        "NoHero": 0, "Norgu": 1, "Goren": 2, "Tahlkora": 3,
-        "MasterOfWhispers": 4, "AcolyteJin": 5, "Koss": 6,
-        "Dunkoro": 7, "AcolyteSousuke": 8, "Melonni": 9,
-        "ZhedShadowhoof": 10, "GeneralMorgahn": 11,
-        "MargridTheSly": 12, "Zenmai": 13, "Olias": 14,
-        "Razah": 15, "MOX": 16, "KeiranThackeray": 17,
-        "Jora": 18, "PyreFierceshot": 19, "Anton": 20,
-        "Livia": 21, "Hayda": 22, "Kahmu": 23, "Gwen": 24,
-        "Xandra": 25, "Vekk": 26, "Ogden": 27,
-    }
-    return HEROES.get(name, 0)
+    """Resolve a hero name to its numeric ID."""
+    from .constants_generated import HERO_IDS
+
+    val = HERO_IDS.get(name)
+    if val is not None:
+        return val
+    try:
+        return int(name)
+    except ValueError:
+        return 0
 
 
 def _resolve_trigger(name: str) -> int:
