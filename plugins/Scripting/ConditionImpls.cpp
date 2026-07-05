@@ -2333,3 +2333,16 @@ bool PlayerAdrenalineCondition::drawSettings()
     ImGui::PopID();
     return false;
 }
+
+/// ------------- HasCalledTargetCondition -------------
+bool HasCalledTargetCondition::check() const
+{
+    return InstanceInfo::getInstance().hasCalledTarget();
+}
+bool HasCalledTargetCondition::drawSettings()
+{
+    ImGui::PushID(drawId());
+    ImGui::Text("If any target has been called by the party");
+    ImGui::PopID();
+    return false;
+}

@@ -9,7 +9,7 @@ namespace
 {
 ConditionPtr makeCondition(ConditionType type)
 {
-    static_assert((int)ConditionType::Count == 61);
+    static_assert((int)ConditionType::Count == 62);
     switch (type) {
         case ConditionType::Not:
             return std::make_shared<NegatedCondition>();
@@ -112,6 +112,9 @@ ConditionPtr makeCondition(ConditionType type)
         case ConditionType::PlayerAdrenaline:
             return std::make_shared<PlayerAdrenalineCondition>();
 
+        case ConditionType::HasCalledTarget:
+            return std::make_shared<HasCalledTargetCondition>();
+
         default:
             return nullptr;
     }
@@ -119,7 +122,7 @@ ConditionPtr makeCondition(ConditionType type)
 
 std::string_view toString(ConditionType type)
 {
-    static_assert((int)ConditionType::Count == 61);
+    static_assert((int)ConditionType::Count == 62);
     switch (type) {
         case ConditionType::Not:
             return "Not";
@@ -219,6 +222,9 @@ std::string_view toString(ConditionType type)
         case ConditionType::PlayerAdrenaline:
             return "Player adrenaline";
 
+        case ConditionType::HasCalledTarget:
+            return "Has called target";
+
         default:
             return "Unknown";
     }
@@ -227,7 +233,7 @@ std::string_view toString(ConditionType type)
 
 ConditionPtr readCondition(InputStream& stream)
 {
-static_assert((int)ConditionType::Count == 60);
+static_assert((int)ConditionType::Count == 62);
 int type;
 stream >> type;
 switch (static_cast<ConditionType>(type))
@@ -332,6 +338,9 @@ switch (static_cast<ConditionType>(type))
     case ConditionType::PlayerAdrenaline:
         return std::make_shared<PlayerAdrenalineCondition>(stream);
 
+    case ConditionType::HasCalledTarget:
+        return std::make_shared<HasCalledTargetCondition>(stream);
+
     default:
         return nullptr;
 }
@@ -389,6 +398,7 @@ ConditionPtr drawConditionSelector(float width)
             ImGui::EndMenu();
         }
         drawConditionSelector(ConditionType::AgentWithCharacteristicsCount);
+        drawConditionSelector(ConditionType::HasCalledTarget);
         
         drawSubMenu("Item", itemConditions);
         drawSubMenu("Party", partyConditions);

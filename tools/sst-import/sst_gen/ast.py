@@ -75,6 +75,7 @@ class ConditionType(IntEnum):
     PlayerIsDrunk = 61
     ItemInInventoryList = 62
     PlayerAdrenaline = 63
+    HasCalledTarget = 64
 
 
 class ActionType(IntEnum):
@@ -859,6 +860,11 @@ class KeyIsPressedCondition(Condition):
     block_key: bool = False
 
 
+@dataclass
+class HasCalledTargetCondition(Condition):
+    pass
+
+
 Condition = Union[
     NegatedCondition,
     ConjunctionCondition,
@@ -907,6 +913,7 @@ Condition = Union[
     ItemInInventoryListCondition,
     PlayerAdrenalineCondition,
     KeyIsPressedCondition,
+    HasCalledTargetCondition,
 ]
 
 
@@ -1591,6 +1598,8 @@ def _serialize_condition(stream, cond):
         _serialize_player_adrenaline_condition(stream, cond)
     elif isinstance(cond, KeyIsPressedCondition):
         _serialize_key_is_pressed_condition(stream, cond)
+    elif isinstance(cond, HasCalledTargetCondition):
+        _serialize_has_called_target_condition(stream, cond)
 
 
 def _serialize_negated_condition(stream, cond):
@@ -1933,6 +1942,11 @@ def _serialize_key_is_pressed_condition(stream, cond):
     stream.write(cond.hotkey.key_data)
     stream.write(cond.hotkey.modifier)
     stream.write(cond.block_key)
+
+
+def _serialize_has_called_target_condition(stream, cond):
+    stream.write('C')
+    stream.write(ConditionType.HasCalledTarget)
 
 
 # === Action serialization ===

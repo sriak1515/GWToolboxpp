@@ -51,6 +51,7 @@ enum class ConditionType : int {
     PlayerIsDrunk,
     ItemInInventoryList,
     PlayerAdrenaline,
+    HasCalledTarget,
 
     Count
 };

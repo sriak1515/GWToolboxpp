@@ -21,6 +21,7 @@ from .ast import (
     DisjunctionCondition,
     FalseCondition,
     FoeCountCondition,
+    HasCalledTargetCondition,
     HeroHasBuffCondition,
     HeroHasEnergyCondition,
     HeroHasSkillCondition,
@@ -371,6 +372,7 @@ CONDITION_MAP: dict[str, tuple[int, callable]] = {
         comparison=_resolve_comparison(kw.get("comp", ">=")),
     )),
     "OnlyTriggerOncePerInstance": (10, lambda kw: OnlyTriggerOnceCondition()),
+    "HasCalledTarget": (64, lambda kw: HasCalledTargetCondition()),
 }
 
 

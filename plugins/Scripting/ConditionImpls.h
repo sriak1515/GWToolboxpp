@@ -642,3 +642,12 @@ private:
     int adrenaline = 0;
     ComparisonOperator comp = ComparisonOperator::GreaterOrEqual;
 };
+
+class HasCalledTargetCondition : public Condition {
+public:
+    HasCalledTargetCondition() = default;
+    HasCalledTargetCondition(InputStream&) {}
+    ConditionType type() const final { return ConditionType::HasCalledTarget; }
+    bool check() const final;
+    bool drawSettings() final;
+};

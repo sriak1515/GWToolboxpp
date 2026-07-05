@@ -25,6 +25,7 @@ namespace {
     GW::HookEntry ManipulateMapObject_Entry;
     GW::HookEntry DungeonReward_Entry;
     GW::HookEntry CountdownStart_Entry;
+    GW::HookEntry CalledTarget_Entry;
 
     bool isTargetableMiniPet(uint32_t itemId) 
     {
@@ -61,6 +62,7 @@ void InstanceInfo::initialize()
         this->decodedAgentNames.clear();
         this->decodedItemNames.clear();
         this->storedTargets.clear();
+        this->calledTargetIds.clear();
         this->doorStatus.clear();
         instanceIsCompleted = false;
 
@@ -114,6 +116,22 @@ void InstanceInfo::initialize()
             doorStatus[(DoorID)packet->object_id] = DoorStatus::Closed;
         }
     });
+
+    RegisterUIMessageCallback(&CalledTarget_Entry, GW::UI::UIMessage::kCalledTargetChange, [this](GW::HookStatus*, GW::UI::UIMessage, void* wparam, void*) {
+        if (!wparam) return;
+        const struct Packet {
+            uint32_t source;
+            uint32_t identifier;
+        }* packet = static_cast<Packet*>(wparam);
+        const auto party = GW::PartyMgr::GetPartyInfo();
+        if (!party) return;
+        for (const auto& player : party->players) {
+            if (player.party_leader_player_number == packet->source) {
+                calledTargetIds.insert(packet->identifier);
+                return;
+            }
+        }
+    });
 }
 
 void InstanceInfo::terminate() 
@@ -124,6 +142,7 @@ void InstanceInfo::terminate()
     GW::StoC::RemoveCallback<GW::Packet::StoC::ManipulateMapObject>(&ManipulateMapObject_Entry);
     GW::StoC::RemoveCallbacks(&CountdownStart_Entry); // Fixed: CountdownStart_Entry was registered but had no matching remove call; dangling callback after plugin unload.
     RemoveUIMessageCallback(&UseItem_Entry, GW::UI::UIMessage::kSendUseItem);
+    RemoveUIMessageCallback(&CalledTarget_Entry, GW::UI::UIMessage::kCalledTargetChange);
 }
 
 std::string InstanceInfo::getDecodedAgentName(GW::AgentID id)
