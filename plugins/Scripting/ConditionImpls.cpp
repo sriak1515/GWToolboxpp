@@ -2311,7 +2311,7 @@ bool PlayerAdrenalineCondition::check() const
         if (bar->skills[i].skill_id == skillId)
         {
             const auto currentAdrenaline = (int)bar->skills[i].adrenaline_a;
-            return checkComparison(currentAdrenaline, adrenaline, comp);
+            return compare(currentAdrenaline, comp, adrenaline);
         }
     }
     return false;
@@ -2325,7 +2325,7 @@ bool PlayerAdrenalineCondition::drawSettings()
     ImGui::SameLine();
     ImGui::Text("is");
     ImGui::SameLine();
-    drawComparisonOperator(comp);
+    drawEnumButton(comp, {.last = ComparisonOperator::NotEquals, .width = 30.f});
     ImGui::SameLine();
     ImGui::PushItemWidth(60.f);
     ImGui::InputInt("##adrenaline", &adrenaline, 0);

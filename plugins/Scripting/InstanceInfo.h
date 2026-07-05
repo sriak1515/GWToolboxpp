@@ -7,7 +7,7 @@
 
 #include <chrono>
 #include <unordered_map>
-#include <unordered_set>
+
 
 // Contains information about the current instance which either has to be kept between function calls or is expensive to compute
 class InstanceInfo {
@@ -27,7 +27,7 @@ public:
     bool canPopAgent() const;
     bool hasMinipetPopped() const;
     int getInstanceId() const { return instanceId; }
-    bool hasCalledTarget() const { return !calledTargetIds.empty(); }
+    bool hasCalledTarget() const;
     void storeTarget(const GW::AgentLiving* agent, int storageId);
     const GW::AgentLiving* retrieveTarget(int storageId) const;
     bool isStoredTarget(const GW::AgentLiving& agent) const;
@@ -45,7 +45,7 @@ private:
     std::unordered_map<GW::AgentID, std::wstring> decodedAgentNames;
     std::unordered_map<uint32_t, std::wstring> decodedItemNames;
     std::unordered_map<int, GW::AgentID> storedTargets;
-    std::unordered_set<GW::AgentID> calledTargetIds;
+
     
     std::unordered_map<DoorID, DoorStatus> doorStatus;
     int instanceId = 0;
