@@ -358,7 +358,7 @@ CONDITION_MAP: dict[str, tuple[int, callable]] = {
         has_min_level=kw.get("hasMinLevel", "false").lower() == "true",
     )),
     "ItemInInventoryList": (62, lambda kw: ItemInInventoryListCondition(
-        ids=[int(x.strip()) for x in kw.get("ids", kw.get("0", "")).split(",") if x.strip()],
+        ids=[int(x.strip()) for x in kw.get("ids", ",".join(v for k, v in sorted(kw.items()) if k.isdigit())).split(",") if x.strip()],
     )),
     "HasTerrainClearance": (57, lambda kw: HasTerrainClearanceCondition(
         degree=_parse_number_value(kw.get("degree", "0")),
@@ -1049,7 +1049,8 @@ class Parser:
             return UseItemAction(id=_parse_number_value(kw.get("id", "0")))
         if name == "UseItemList":
             from .ast import UseItemListAction
-            ids = [int(x.strip()) for x in kw.get("ids", "").split(",") if x.strip()]
+            ids_str = kw.get("ids", ",".join(v for k, v in sorted(kw.items()) if k.isdigit()))
+            ids = [int(x.strip()) for x in ids_str.split(",") if x.strip()]
             return UseItemListAction(ids=ids)
         if name == "SetVariable":
             from .ast import SetVariableAction
