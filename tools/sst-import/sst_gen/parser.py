@@ -32,6 +32,7 @@ from .ast import (
     OnlyTriggerOnceCondition,
     PlayerAdrenalineCondition,
     PlayerHasBuffCondition,
+    PlayerHasCharacteristicsCondition,
     PlayerHasEnergyCondition,
     PlayerHasSkillCondition,
     PlayerIsDrunkCondition,
@@ -43,6 +44,23 @@ from .ast import (
     TriggerData,
     Hotkey,
     AllegianceCharacteristic,
+    StatusCharacteristic,
+    DistanceToPlayerCharacteristic,
+    DistanceToTargetCharacteristic,
+    DistanceToModelIdCharacteristic,
+    PositionCharacteristic,
+    HPCharacteristic,
+    HPRegenCharacteristic,
+    SpeedCharacteristic,
+    ClassCharacteristic,
+    NameCharacteristic,
+    ModelCharacteristic,
+    WeaponTypeCharacteristic,
+    SkillCharacteristic,
+    BondCharacteristic,
+    AngleToPlayerForwardCharacteristic,
+    AngleToCameraForwardCharacteristic,
+    IsStoredTargetCharacteristic,
     TrueCharacteristic,
     Characteristic,
 )
@@ -575,6 +593,11 @@ class Parser:
             # Check for parentheses: Name(...)
             if self.peek().type == TT.LPAREN:
                 self.advance()
+                # Special handling for conditions that take a characteristic argument
+                if name == "PlayerHasCharacteristics":
+                    char = self.parse_characteristic()
+                    self.expect(TT.RPAREN)
+                    return PlayerHasCharacteristicsCondition(characteristic=char)
                 kw = self._parse_kwargs()
                 self.expect(TT.RPAREN)
                 return self._make_condition(name, kw)
@@ -653,6 +676,170 @@ class Parser:
             self.skip_newlines()
             conds.append(self.parse_condition())
         return conds
+
+    # --- Characteristic parsing ---
+
+    def parse_characteristic(self) -> Characteristic:
+        """Parse a single characteristic expression."""
+        from .ast import (
+            NegationCharacteristic,
+            ConjunctionCharacteristic,
+            DisjunctionCharacteristic,
+        )
+
+        # not Characteristic
+        if self.peek().type == TT.KEYWORD and self.peek().value == "not":
+            self.advance()
+            inner = self.parse_characteristic()
+            return NegationCharacteristic(characteristic=inner)
+
+        # Or(Characteristic, Characteristic, ...)
+        if self.peek().type == TT.KEYWORD and self.peek().value == "Or":
+            self.advance()
+            self.expect(TT.LPAREN)
+            chars = self._parse_characteristic_list()
+            self.skip_newlines()
+            self.expect(TT.RPAREN)
+            return DisjunctionCharacteristic(characteristics=chars)
+
+        # And(Characteristic, Characteristic, ...)
+        if self.peek().type == TT.KEYWORD and self.peek().value == "And":
+            self.advance()
+            self.expect(TT.LPAREN)
+            chars = self._parse_characteristic_list()
+            self.skip_newlines()
+            self.expect(TT.RPAREN)
+            return ConjunctionCharacteristic(characteristics=chars)
+
+        # Type(args)
+        if self.peek().type == TT.IDENT:
+            name = self.advance().value
+            if self.peek().type == TT.LPAREN:
+                self.advance()
+                kw = self._parse_kwargs()
+                self.expect(TT.RPAREN)
+                return self._make_characteristic(name, kw)
+
+            raise SyntaxError(
+                f"Line {self.peek().line}: expected characteristic with args, got {self.peek().type.name} ({self.peek().value!r})"
+            )
+
+        tok = self.peek()
+        raise SyntaxError(
+            f"Line {tok.line}: expected characteristic, got {tok.type.name} ({tok.value!r})"
+        )
+
+    def _parse_characteristic_list(self) -> list[Characteristic]:
+        """Parse comma-separated characteristic expressions."""
+        chars: list[Characteristic] = []
+        self.skip_newlines()
+        chars.append(self.parse_characteristic())
+        while self.match(TT.COMMA):
+            self.skip_newlines()
+            chars.append(self.parse_characteristic())
+        return chars
+
+    def _make_characteristic(self, name: str, kw: dict[str, str]) -> Characteristic:
+        """Build a characteristic from Name(kwargs)."""
+        from .ast import AgentType, IsIsNot, Status, SkillType, Class, WeaponType, IdRestriction
+
+        if name == "Allegiance":
+            return AllegianceCharacteristic(
+                agent_type=getattr(AgentType, kw.get("agentType", kw.get("0", "Any")), 0),
+                comparison=getattr(IsIsNot, kw.get("comp", "Is_"), 0),
+            )
+        if name == "Status":
+            return StatusCharacteristic(
+                status=getattr(Status, kw.get("status", kw.get("0", "Alive")), 2),
+                comparison=getattr(IsIsNot, kw.get("comp", "Is_"), 0),
+                skill_type=getattr(SkillType, kw.get("skillType", "Any"), 0),
+            )
+        if name == "DistanceToPlayer":
+            return DistanceToPlayerCharacteristic(
+                value=_parse_number_value(kw.get("distance", kw.get("0", "166"))),
+                comparison=_resolve_comparison(kw.get("comp", "<=")),
+            )
+        if name == "DistanceToTarget":
+            return DistanceToTargetCharacteristic(
+                value=_parse_number_value(kw.get("distance", kw.get("0", "166"))),
+                comparison=_resolve_comparison(kw.get("comp", "<=")),
+            )
+        if name == "DistanceToModelId":
+            return DistanceToModelIdCharacteristic(
+                model_id=int(kw.get("modelId", kw.get("0", "0"))),
+                value=_parse_number_value(kw.get("distance", kw.get("1", "166"))),
+                comparison=_resolve_comparison(kw.get("comp", "<=")),
+            )
+        if name == "Position":
+            return PositionCharacteristic(
+                x=_parse_number_value(kw.get("x", kw.get("0", "0"))),
+                y=_parse_number_value(kw.get("y", kw.get("1", "0"))),
+                accuracy=_parse_number_value(kw.get("distance", kw.get("2", "166"))),
+                comparison=_resolve_comparison(kw.get("comp", "<=")),
+            )
+        if name == "HP":
+            return HPCharacteristic(
+                hp=_parse_number_value(kw.get("hp", kw.get("0", "50"))),
+                comparison=_resolve_comparison(kw.get("comp", "<=")),
+            )
+        if name == "HPRegen":
+            return HPRegenCharacteristic(
+                regen=int(_parse_number_value(kw.get("hpRegen", kw.get("0", "0")))),
+                comparison=_resolve_comparison(kw.get("comp", ">")),
+            )
+        if name == "Speed":
+            return SpeedCharacteristic(
+                speed=_parse_number_value(kw.get("speed", kw.get("0", "0"))),
+                comparison=_resolve_comparison(kw.get("comp", ">=")),
+            )
+        if name == "Class":
+            return ClassCharacteristic(
+                primary=getattr(Class, kw.get("primary", kw.get("0", "Any")), 0),
+                secondary=getattr(Class, kw.get("secondary", kw.get("1", "Any")), 0),
+                comparison=getattr(IsIsNot, kw.get("comp", "Is_"), 0),
+            )
+        if name == "Name":
+            return NameCharacteristic(
+                name=kw.get("name", kw.get("0", "")),
+                comparison=getattr(IsIsNot, kw.get("comp", "Is_"), 0),
+            )
+        if name == "Model":
+            return ModelCharacteristic(
+                model_id=int(kw.get("modelId", kw.get("0", "0"))),
+                comparison=getattr(IsIsNot, kw.get("comp", "Is_"), 0),
+            )
+        if name == "WeaponType":
+            return WeaponTypeCharacteristic(
+                weapon_type=getattr(WeaponType, kw.get("weapon", kw.get("0", "Any")), 0),
+                comparison=getattr(IsIsNot, kw.get("comp", "Is_"), 0),
+            )
+        if name == "Skill":
+            return SkillCharacteristic(
+                skill_id=_resolve_skill(kw.get("skill", kw.get("0", "No_Skill"))),
+                comparison=getattr(IsIsNot, kw.get("comp", "Is_"), 0),
+            )
+        if name == "Bond":
+            return BondCharacteristic(
+                bond=_resolve_skill(kw.get("skill", kw.get("0", "No_Skill"))),
+                comparison=getattr(IsIsNot, kw.get("comp", "Is_"), 0),
+            )
+        if name == "AngleToPlayerForward":
+            return AngleToPlayerForwardCharacteristic(
+                angle=_parse_number_value(kw.get("angle", kw.get("0", "180"))),
+                comparison=_resolve_comparison(kw.get("comp", "<=")),
+            )
+        if name == "AngleToCameraForward":
+            return AngleToCameraForwardCharacteristic(
+                angle=_parse_number_value(kw.get("angle", kw.get("0", "180"))),
+                comparison=_resolve_comparison(kw.get("comp", "<=")),
+            )
+        if name == "IsStoredTarget":
+            return IsStoredTargetCharacteristic(
+                slot=int(_parse_number_value(kw.get("slot", kw.get("0", "0")))),
+                comparison=getattr(IsIsNot, kw.get("comp", "Is_"), 0),
+                id_restriction=getattr(IdRestriction, kw.get("idRestriction", "Any"), 0),
+            )
+        raise SyntaxError(f"Unknown characteristic type: {name}")
 
     # --- Action parsing ---
 
@@ -909,8 +1096,8 @@ class Parser:
                     val = self._parse_raw_value()
                     kw[str(pos_idx)] = val
                     pos_idx += 1
-            elif self.peek().type in (TT.NUMBER, TT.KEYWORD):
-                # Positional arg (e.g. Wait(100ms))
+            elif self.peek().type in (TT.NUMBER, TT.KEYWORD, TT.OP):
+                # Positional arg (e.g. Wait(100ms), DistanceToPlayer(500, <))
                 val = self._parse_raw_value()
                 kw[str(pos_idx)] = val
                 pos_idx += 1

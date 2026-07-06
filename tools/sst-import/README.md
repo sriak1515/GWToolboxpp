@@ -61,9 +61,51 @@ script "Script Name" {
 | `ScriptVariableIsSet` | `(name: X)` |
 | `Throttle` | `(Nms)` |
 | `IsInCombat` | `(range: N)` — true if any hostile agent within range (default 1012 gwinches) |
+| `PlayerHasCharacteristics` | `(Characteristic)` — true if player matches characteristic |
 | `True_` | (no parameters) — always true |
 | `False_` | (no parameters) — always false |
 | `not` | Wraps any condition: `not PlayerHasBuff(...)` |
+
+### Characteristic Types
+
+Characteristics are used by `PlayerHasCharacteristics` to filter agents. They can be combined with `And`, `Or`, `Not` logical operators.
+
+| Characteristic | Parameters | Description |
+|---------------|-----------|-------------|
+| `Allegiance` | `(agentType: AgentType, comp: Is_\|IsNot)` | Agent's allegiance (Self, PartyMember, Friendly, Hostile) |
+| `Status` | `(status: Status, comp: Is_\|IsNot)` | Agent's status (Alive, Attacking, Casting, etc.) |
+| `HP` | `(hp: float, comp: <\|>\|<=\|>=\|==\|!=)` | Agent's HP percentage |
+| `HPRegen` | `(hpRegen: int, comp: <\|>\|<=\|>=\|==\|!=)` | Agent's HP regeneration |
+| `Speed` | `(speed: float, comp: <\|>\|<=\|>=\|==\|!=)` | Agent's movement speed |
+| `DistanceToPlayer` | `(distance: float, comp: <\|>\|<=\|>=\|==\|!=)` | Distance to player meets comparison |
+| `DistanceToTarget` | `(distance: float, comp: <\|>\|<=\|>=\|==\|!=)` | Distance to current target meets comparison |
+| `DistanceToModelId` | `(modelId: int, distance: float, comp: <\|>\|<=\|>=\|==\|!=)` | Distance to agent with model ID |
+| `Position` | `(x: float, y: float, distance: float, comp: <\|>\|<=\|>=\|==\|!=)` | Agent is within distance of position |
+| `Class` | `(primary: Class, secondary: Class, comp: Is_\|IsNot)` | Agent's primary/secondary class |
+| `Name` | `(name: string, comp: Is_\|IsNot)` | Agent's decoded name |
+| `Model` | `(modelId: int, comp: Is_\|IsNot)` | Agent's model ID |
+| `WeaponType` | `(weapon: WeaponType, comp: Is_\|IsNot)` | Agent's equipped weapon type |
+| `Skill` | `(skill: SkillID, comp: Is_\|IsNot)` | Agent is casting/has skill active |
+| `Bond` | `(skill: SkillID, comp: Is_\|IsNot)` | Agent has bond/communing skill |
+| `AngleToPlayerForward` | `(angle: float, comp: <\|>\|<=\|>=\|==\|!=)` | Angle to player's forward direction |
+| `AngleToCameraForward` | `(angle: float, comp: <\|>\|<=\|>=\|==\|!=)` | Angle to camera's forward direction |
+| `IsStoredTarget` | `(slot: int, comp: Is_\|IsNot, idRestriction: Any\|SpecificId)` | Agent is/isn't a stored target |
+| `And` | `(Characteristic, Characteristic, ...)` | All must match |
+| `Or` | `(Characteristic, Characteristic, ...)` | Any must match |
+| `Not` | `(Characteristic)` | Negate a characteristic |
+
+#### Examples
+
+```sst
+// Player is attacking
+PlayerHasCharacteristics(Status(Attacking))
+
+// Player has less than 50% HP
+PlayerHasCharacteristics(HP(50, <))
+
+// Player is enchanted and has more than 100 energy
+PlayerHasCharacteristics(And(Status(Enchanted), DistanceToPlayer(500, <)))
+```
 
 ### Supported Actions
 
