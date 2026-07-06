@@ -5,18 +5,19 @@
 // Priority: Twin Moon Sweep > Eremite's Attack > Flash enchantments (filler)
 //
 // Clipboard import (paste into SST's Import field):
-//   11 6tAXnhvYnlhi09paWSO5C#tYmZi2Ctrp4zfeeeeeefep2rLSuAp2rPOBrd9Gzu#yfDjgbKKuyjejfzfAFDeeeelbjfzfAFDegbbsWsWsrwHwN3rGSeKv0vbOSeSeyigbwN3sWsbwHLelbeep2bxsrGAjejfAfAFDgcWsrrGKqKvKvP94qqqqSeKvKvP94qyeflblbjfAfAFEgcWsrxrugIWsWrGGyfAFElbifAguqSeqq#yfDjfAfAEDgcWrGGyfAEDlbifAfrelbeep2bxsrGyjfAfAEBgcWsrxrSAlblbgcbGvP5SSeGvOveqSeqq#yfDjgbSKCzfAEDgXsWsrLOvP5SuqzfrelbjfgcrcrwrwN3rbbbcWsrwrwN3rbKquSeSeKvOvP90ylbjfDggXOSeSeyigbwN3sWsbwHLelbeep2bxsrGCjhgrwNNrSuSeKzAfAEBfegrurcWsrcrwHwN3rGSeKuyjejfzfAFEeeeelbjfzfAFEegrbsWsWsrwHwN3HGSeKv0yBgIWsWrGGyfAFElbifAguqSeqq#ygwd9
+//   11 6tAXnhvYnlhi09paWSO5C#tYmZi2Ctrp4quqqqquq#zgNHOu7HvgHcWxUgbuvIKflbF2rXt9KAAg0q#ygvp2bxsrGzjfgcrcrwrwN3rbbbcWsrwrwN3rbGquSeSeKvOvP90ylbjfDfqAlblbgcbGvP90SeGvOzrcWrbd9Gv0KygIrcrwHwN3rGSeKuyjejfzfAFEeeeelbjfzfAFEegbbsWsWsrwHwN3HGSeKv0vbOSeSeyigbwN3IWsbwHLelbeep2bxsrwHwNNrGSeyigbwNNsWsbwHurcWrbd9Gv0KygcrwHwNMXGSeKv0BgIWsWrGGyfAEBlbifAfrelbeep2bxsrGBjhefAEDgXsWsrLOvP5SuqzfrelbjfgcrcrwrwN3rbbbcWsrwrwN3rbKquSeSeKvOvP90ylbjfDggXOSeSeyigbwN3sWsbwHLelbeep2bxsrGCjhefAEDgXsWsrLOvP5SuqzfrelbjejfAfAFDgcWsrrGKqKvKvP94qqqqSeKvKvP94qzeflblbjfAfAFEgcWsrxrHSAlblbgcbGvP94SeGvOzrcWrbd9Gzyp0
 //
 // To regenerate: python3 tools/sst-import/sst_script_gen.py scripts/sst/dervish-attack-optimizer.sst --dry-run
 // NOTE: Requires PlayerHasEnergy support in sst_script_gen.py
 
 script "Dervish Attack Optimizer" {
-    trigger: Hotkey
+    trigger: None
     canLaunchInParallel: false
     globallyExclusive: true
 
     when {
-        FoeCount >= 1
+        IsInCombat
+        HasCalledTarget
         Throttle(500ms)
     }
 

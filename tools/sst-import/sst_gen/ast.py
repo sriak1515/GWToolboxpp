@@ -70,12 +70,10 @@ class ConditionType(IntEnum):
     ObjectiveHasState = 55
     HeroHasSkill = 56
     HasTerrainClearance = 57
-    HeroHasEnergy = 58
-    HeroHasBuff = 59
-    PlayerIsDrunk = 61
-    ItemInInventoryList = 62
-    PlayerAdrenaline = 63
-    HasCalledTarget = 64
+    PlayerIsDrunk = 58
+    ItemInInventoryList = 59
+    PlayerAdrenaline = 60
+    HasCalledTarget = 61
 
 
 class ActionType(IntEnum):

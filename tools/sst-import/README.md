@@ -51,10 +51,18 @@ script "Script Name" {
 | `HeroHasEnergy` | `(hero: HeroID, energy: N, comp: >=\|<=\|==\|!=\|>\|<)` |
 | `HeroHasBuff` | `(hero: HeroID, skill: SkillName)` |
 | `PlayerHasEnergy` | `(energy: N, comp: >=\|<=\|==\|!=\|>\|<)` |
+| `PlayerAdrenaline` | `(skill: SkillName, adrenaline: N, comp: >=\|<=\|==\|!=\|>\|<)` |
 | `RemainingCooldown` | `(skill: SkillName)` |
-| `PlayerIsDead` | (no parameters) |
+| `OnlyTriggerOncePerInstance` | (no parameters) |
+| `PlayerIsDrunk` | `(minLevel: N)` |
+| `HasCalledTarget` | (no parameters) |
+| `HasTerrainClearance` | `(degree: N, distance: N)` |
+| `ItemInInventoryList` | `(ids: N, M, ...)` |
+| `ScriptVariableIsSet` | `(name: X)` |
 | `Throttle` | `(Nms)` |
 | `IsInCombat` | `(range: N)` — true if any hostile agent within range (default 1012 gwinches) |
+| `True_` | (no parameters) — always true |
+| `False_` | (no parameters) — always false |
 | `not` | Wraps any condition: `not PlayerHasBuff(...)` |
 
 ### Supported Actions
@@ -75,6 +83,10 @@ script "Script Name" {
 | `SendChat` | `(channel: Channel, message: string)` |
 | `FlagHero` | `(degree: X, distance: Y, hero: Z)` |
 | `SetVariable` | `(name: X, value: Y, preserve: Z)` |
+| `ClearTarget` | none |
+| `Cancel` | none |
+| `StopScript` | none |
+| `PingHardMode` | none |
 | `Conditioned` | `(cond: Condition, then: {...}, else: {...})` |
 
 ### Regenerating Constants

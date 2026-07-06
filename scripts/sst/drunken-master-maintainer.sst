@@ -7,7 +7,7 @@
 // Any drink item from Guild Wars will work (ales, wines, grog, brandy, etc.)
 //
 // Clipboard import (paste into SST's Import field):
-//   11 6tA0DtnYStnopa0Tpe0tJWmJn08diZCtrp4quqqqqqu#zgwXrO#zejfzggfEeeeep2rwHHHxHG#zgMHLeq#yfDjejhffelbgIbLsWsbxsrXGuCzDBlbgcbP0uCzDBlbifAfrelbfifBhs1VA4_paYm3tWmJnXng13TWnhnYm3gS65m7aY8loX87lYm3iZDxeZDpo0DJYp4SeqSeGyggfElbigwcWrKGzuSeGyggfElbigwcWrd9a
+//   11 6tA0DtnYStnopa0Tpe0tJWmJn08diZCtrp4quqqqqqu#zgNHOu7HvgHcWxUgbuvIKflbF2rcrwrHHxHbbbd9KvOyyv4yp2rPOzrep2bxsrcrT4uqSeAigvlbifDjg3XrXL1SSeyigNrrXL1SSeGvOveqSeuGvSDlw9RJ48diZDpaYm3e0BxE3a0C3iZCAZRKZSdlWS7hZSViZCJn1Ctn087r2pi#IWrcWsbGyyv4SeGzylbgsbLsWsbGyyv4SeGzylbep0
 //
 // To regenerate: python3 tools/sst-import/sst_script_gen.py scripts/sst/drunken-master-maintainer.sst --dry-run
 
@@ -16,7 +16,7 @@ script "Drunken Master Maintainer" {
     canLaunchInParallel: true
 
     when {
-        FoeCount >= 1
+        IsInCombat
         not PlayerHasBuff(Drunken_Master)
         PlayerHasSkill(skill: Drunken_Master, requirement: ReadyToUse)
         Throttle(3000ms)

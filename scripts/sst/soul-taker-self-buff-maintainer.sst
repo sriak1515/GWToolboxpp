@@ -4,7 +4,7 @@
 // Switches to weapon set 2 before casting, then back to set 1.
 //
 // Clipboard import (paste into SST's Import field):
-//   11 6tPZTtloRaYStroNeY8x38DtfXtJWmJn08diZCtrp4quqqqqqu#zgwXrO#zgMHLeq#zfgIrcrwrLPHKqqqqSeKvKzAyzegXbsWsrcrwrHwxXbbbcWsrwrHwxXbSquSe#zfAgwMgrG#ygvp2bxHG#yfAg0q#yfDjfgcrcrwrLPHKqqqqSeKvKzAyzegXbsWsWrGGygwMgsWsbwHTelbeep2bxsrrGKqKvKyvL8qqqqSeKvKyvL8qBeflblbgcbGyvL8SeGvOBrcWrbd9Gv4u#ygwd9a
+//   11 6tPZTtloRaYStroNeY8x38DtfXtJWmJn08diZCtrp4quqqqqqu#zgNHOu7HvgHcWxUgbuvIKflbF2rPOzrep2rrOKqKvKzAyzeeeelbjfzgwMgrbSquSeKqKvKyvL8qqqqSeKvKyvL8qBeflbp2rwHLPHKyp2bLt9Gv4yp2bwHTep2bxsrrGKqKvKzAyzeeeelbjfzgwMgrbSquSeSeyigbLPHKSeGvOBrcWrbd9Gv0KuyjejfzgfzFeeeelbjfzgfzFegXbsWsWrGGygfzFlbifAg0qSeqq#yfEfp2bLG#q
 //
 // To regenerate: python3 tools/sst-import/sst_script_gen.py scripts/sst/soul-taker-self-buff-maintainer.sst --dry-run
 
@@ -13,7 +13,7 @@ script "Soul Taker Self-Buff Maintainer" {
     canLaunchInParallel: true
 
     when {
-        FoeCount >= 1
+        IsInCombat
         Throttle(3000ms)
         Or(not PlayerHasBuff(Soul_Taker), PlayerHasBuff(id: Soul_Taker, hasMax: true, maxDuration: 5), not PlayerHasBuff(Masochism), PlayerHasBuff(id: Masochism, hasMax: true, maxDuration: 5))
         PlayerHasSkill(skill: Soul_Taker, requirement: ReadyToUse)

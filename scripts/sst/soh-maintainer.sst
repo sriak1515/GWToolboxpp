@@ -3,7 +3,7 @@
 // Recasts when the buff expires during combat.
 //
 // Clipboard import (paste into SST's Import field):
-//   11 6tPZT448diZDpaYm3e0t_efeeeeefp2rLSuAp2rcrwrHPKqqqq#zg3bbHPKyp2rPOzrep2bLt9Gv8u#ygXbbbdUfuuqSf#yggrbHPK#ygefp2bLG#q
+//   11 6tPZT448diZDpaYm3e0t_efeeeeefp2rP4Afo4vrOqSf7HGvfyPbsWx9KqKvKyAzeeeep2rTWqyAzgd9KAAgurd9Gzu#yfFfp2bSqqqq7HvfelbF2bHKqyAzp2bHbt9Gzyp0
 //
 // To regenerate: python3 tools/sst-import/sst_script_gen.py scripts/sst/soh-maintainer.sst --dry-run
 
@@ -12,7 +12,7 @@ script "SoH Maintainer" {
     canLaunchInParallel: true
 
     when {
-        FoeCount >= 1
+        IsInCombat
         not PlayerHasBuff(Strength_of_Honor)
         HeroHasSkill(hero: NoHero, skill: Strength_of_Honor, requirement: ReadyToUse)
         Throttle(3000ms)

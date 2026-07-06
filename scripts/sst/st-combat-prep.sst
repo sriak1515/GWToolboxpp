@@ -3,7 +3,7 @@
 // Casting order: Soul Twisting -> Shelter -> Union -> Armor of Unfeeling.
 //
 // Clipboard import (paste into SST's Import field):
-//   11 6tP6IC7mWCdtoBrXm8#HKuqqqqqquq#zgwXrO#zg3bbwgKgd9KAAg0rd9Gzu#yggrbwgKp2bwHHeq#yggrb95G#yfAfBrd9Gyzeh1u#yfAfBrd9Gyzefyzyp2bLG#q
+//   11 6tP6IC7mWCdtoBrXm8#HKuqqqqqquq#zgNHOu7HvgHcWxUgbuvIKflbF2rTWqvHPbG#zgMHTeq#ygvp2bHKqvHPd9GvOyrep2bHKqFEyp2bwHw0q#yggrb9vp2bwHw0q#yggrbwgwd9Gzyp0
 //
 // Soul Twisting reduces Binding Ritual costs by 15 (min 10) and makes them
 // recharge instantly for 45s, ending after 3 rituals.
@@ -28,7 +28,7 @@ script "ST Combat Prep" {
 
     when {
         // Only prep when there are enemies
-        FoeCount >= 1
+        IsInCombat
         // Hero must have Soul Twisting ready
         HeroHasSkill(hero: NoHero, skill: Soul_Twisting, requirement: ReadyToUse)
         // Prevent spam-casting (adjust ms as needed)

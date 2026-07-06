@@ -351,15 +351,6 @@ CONDITION_MAP: dict[str, tuple[int, callable]] = {
         energy=_parse_number_value(kw.get("energy", "0")),
         comparison=_resolve_comparison(kw.get("comp", ">=")),
     )),
-    "HeroHasEnergy": (58, lambda kw: HeroHasEnergyCondition(
-        hero_id=_resolve_hero(kw.get("hero", "NoHero")),
-        energy=_parse_number_value(kw.get("energy", "0")),
-        comparison=_resolve_comparison(kw.get("comp", ">=")),
-    )),
-    "HeroHasBuff": (59, lambda kw: HeroHasBuffCondition(
-        hero_id=_resolve_hero(kw.get("hero", "NoHero")),
-        skill_id=_resolve_skill(kw.get("skill", kw.get("0", "No_Skill"))),
-    )),
     "RemainingCooldown": (34, lambda kw: RemainingCooldownCondition(
         skill_id=_resolve_skill(kw.get("id", kw.get("0", "No_Skill"))),
         has_min=kw.get("hasMin", "false").lower() == "true",
@@ -593,6 +584,10 @@ class Parser:
                 return PlayerIsDrunkCondition()
             if name == "IsInCombat":
                 return IsInCombatCondition()
+            if name == "HasCalledTarget":
+                return HasCalledTargetCondition()
+            if name == "OnlyTriggerOncePerInstance":
+                return OnlyTriggerOnceCondition()
             if name == "True_":
                 return TrueCondition()
             if name == "False_":
